@@ -15,23 +15,71 @@ $listPedidos = "SELECT btn_agrupate_tmp.BOTONID,agrupate.NUMEROPROMOCION,btn_agr
                 inner join PEDIDOPROMOCION on agrupate.PEDIDOPROMOCIONID = PEDIDOPROMOCION.id";
 $resListPedidos = $conexion->query($listPedidos);
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+$consultaPedidoId = "SELECT PEDIDOFINALID FROM pedidofinal_usuario_1";
+$resConsultaPedidoId = $conexion->query($consultaPedidoId);
+
+while ($registroConsultaPedidoId = $resConsultaPedidoId->fetch_array(MYSQLI_BOTH)) {
+    $pedidoFinalId = $registroConsultaPedidoId["PEDIDOFINALID"];
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+$listaCodigos = "SELECT CODIGO FROM PEDIDOFINAL_AGRUPATE_CODIGO_TMP WHERE PEDIDOFINALID = $pedidoFinalId"; 
+$resListaCodigos = $conexion->query($listaCodigos);
+
+$codigo1Formulario ="";
+$codigo2Formulario ="";
+$segundoCodigoCondicion = false;
+while ($registroListaCodigos = $resListaCodigos->fetch_array(MYSQLI_BOTH)) {
+    if($codigo1Formulario == ""){
+        $codigo1Formulario = $registroListaCodigos["CODIGO"];
+    }
+    if($segundoCodigoCondicion){
+        $codigo2Formulario = $registroListaCodigos["CODIGO"];
+    } 
+    $segundoCodigoCondicion = true;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////// 
+ 
 if (isset($_GET["accion"])) {
     if (($_GET["accion"]) == 'agregarPedido') {
         if (isset($_GET["id"])) {
             $idBoton=$_GET["id"];
             $precio=$_GET["precio"];
-            $agregarAgrupate = "select * from BTN_AGRUPATE_TMP where botonid=$idBoton" ;
-            $resAgregarAgrupate = $conexion->query($agregarAgrupate);
-            $resultAgregarAgrupate = $resAgregarAgrupate->num_rows;
+            $codigo1="";
+            $codigo2="";
+            if (isset($_GET["codigo1"])) {
+                $codigo1=$_GET["codigo1"];
+            }
+            if (isset($_GET["codigo2"])) {
+                $codigo2=$_GET["codigo2"];
+            }
 
-            if ($resultAgregarAgrupate > 0) {
-                $borrarDatosTablaTemporal = "delete from BTN_AGRUPATE_TMP where BOTONID = $idBoton";
-                $conexion->query($borrarDatosTablaTemporal);
-            } else {
+            $consultaPedidoFinal ="SELECT PEDIDOFINALID FROM pedidofinal_usuario_1";
+            $resConsultaPedidoFinal=$conexion->query($consultaPedidoFinal);
+            while ($registroConsultaPedidoFinal = $resConsultaPedidoFinal->fetch_array(MYSQLI_BOTH)) {
+                $pedidoFinalId = $registroConsultaPedidoFinal["PEDIDOFINALID"];
+            }            
+            
+            $eliminarCodTmp = "DELETE FROM PEDIDOFINAL_AGRUPATE_CODIGO_TMP WHERE PEDIDOFINALID = $pedidoFinalId";
+            $conexion->query($eliminarCodTmp);
+            
+            $borrarDatosTablaTemporal = "delete from BTN_AGRUPATE_TMP where BOTONID = $idBoton";
+            $conexion->query($borrarDatosTablaTemporal);
+            
+            if($codigo1 != '' || $codigo2 != ''){
+                if($codigo1 != ''){
+                    $guardarCodigo = "INSERT INTO PEDIDOFINAL_AGRUPATE_CODIGO_TMP (PEDIDOFINALID,CODIGO) VALUES ($pedidoFinalId,$codigo1)";
+                    $conexion->query($guardarCodigo);  
+                }
+                if($codigo2 != ''){
+                    $guardarCodigo = "INSERT INTO PEDIDOFINAL_AGRUPATE_CODIGO_TMP (PEDIDOFINALID,CODIGO) VALUES ($pedidoFinalId,$codigo2)";
+                    $conexion->query($guardarCodigo);  
+                }
                 $guardarDatosTablaTemporal = "insert into BTN_AGRUPATE_TMP (BOTONID,CANTIDAD,PRECIO) values ($idBoton,1,$precio)";
                 $conexion->query($guardarDatosTablaTemporal);
             }
-            Header("Location: agrupate.php");
+            
+            Header("Location: pedido.php");
         }
     }else if (($_GET["accion"]) == 'guardarCantidadPrecio') {
         if (isset($_GET["id"])) {
@@ -49,17 +97,34 @@ if (isset($_GET["accion"])) {
 
 ?>
 <script type="text/javascript">
-function agregarAgrupate(idAgrupate,precio){
-   window.location.href = "agrupate.php?accion=agregarPedido&id=" + idAgrupate+"&precio="+precio;
-}
+    function agregarAgrupate(idAgrupate,precio){
+        var urlCod1="";
+        var urlCod2="";
 
-function guardarCantidadPrecioPedido(valor){
-    var idCantidadPrecio = valor.split("_");
-    var id=idCantidadPrecio[0];
-    var cantidad =idCantidadPrecio[1];
-    var precio=idCantidadPrecio[2];   
-    window.location.href = "agrupate.php?accion=guardarCantidadPrecio&id=" + id+"&cantidad="+cantidad+"&precio="+precio;
-}
+        if(document.getElementById('codigo1').value != ''){
+            urlCod1 = "&codigo1="+document.getElementById('codigo1').value;
+        }
+        if(document.getElementById('codigo2').value != '' && document.getElementById('divCodigo2').style.visibility == 'visible'){
+            urlCod2 = "&codigo2="+document.getElementById('codigo2').value;
+        }
+        window.location.href = "agrupate.php?accion=agregarPedido&id=" + idAgrupate+"&precio="+precio+urlCod1+urlCod2;
+    }
+
+    function guardarCantidadPrecioPedido(valor){
+        var idCantidadPrecio = valor.split("_");
+        var id=idCantidadPrecio[0];
+        var cantidad =idCantidadPrecio[1];
+        var precio=idCantidadPrecio[2];   
+        window.location.href = "agrupate.php?accion=guardarCantidadPrecio&id=" + id+"&cantidad="+cantidad+"&precio="+precio;
+    }
+    
+    function ocultarMostrarCodigo(value){
+        if(value == 1){
+            document.getElementById('divCodigo2').style.visibility = "hidden";
+        }else{
+            document.getElementById('divCodigo2').style.visibility = "visible";
+        }
+    }
  
 
 </script>
@@ -69,44 +134,53 @@ function guardarCantidadPrecioPedido(valor){
     <body style="background-color:lightblue;">
     <table width="100%" >
         <tr>
-            <td width="30%" valign="top">
-                <table cellspacing="0" width="100%" border="2" align="center" valign="top" style="background-color:rgb(255,255,255);">
-                    <tr >
-                        <td align="center">
-                            <b>Promoción</b>
+            <form method="POST" action="../controlador/guardar.php" >
+            <input type="hidden" name="formulario" value="codigosAgrupate">
+                <table align="center" width="80%">
+                    <tr align="center">
+                        <td align="left">
+                            <?php
+                            if($codigo2Formulario == ''){
+                                echo 'Cantidad  de códigos  <select style="width:50px;height:18px" onchange="ocultarMostrarCodigo(this.value)">
+                                <option value="1">1</option>
+                                <option value="2">2</option>';
+                            }else{
+                                echo 'Cantidad  de códigos  <select style="width:50px;height:18px" onchange="ocultarMostrarCodigo(this.value)">
+                                <option value="2">2</option>
+                                <option value="1">1</option>';
+                            }
+                            ?>
+                            
                         </td>
                         <td align="center">
-                            <b>Cantidad</b>
-                        </td>
-                        <td align="center">
-                            <b>Precio</b>
+                            Código 1  <input type="text" name="codigo1" id="codigo1" value="<?php echo $codigo1Formulario?>"/>
+                        </td>       
+                        <td align="rigth">
+                            <?php
+                            if($codigo2Formulario == ''){
+                                echo '<div id="divCodigo2" style="visibility:hidden;">';
+                            }else{
+                                echo '<div id="divCodigo2" style="visibility:visible;">';
+                            }
+                            ?>
+                                Código 2  <input type="text" name="codigo2" id="codigo2" value="<?php echo $codigo2Formulario?>">
+                            </div>
                         </td>
                     </tr>
-                    <?php
-
-                        while ($registroListPedidos = $resListPedidos->fetch_array(MYSQLI_BOTH)) {
-                            echo '<tr valign="top" align="center" ><td>Promoción '.$registroListPedidos["NUMEROPROMOCION"].'</td>
-                                  <td><select style="width:50px;height:18px" onchange="guardarCantidadPrecioPedido(this.value)">';
-                                for($s=1;$s<=10;$s++){
-                                    echo '<option ';
-                                    if($registroListPedidos["CANTIDAD"]==$s){
-                                        echo 'selected ';
-                                    }
-                                    echo 'value="'.$registroListPedidos["BOTONID"].'_'.$s.'_'.($s*$registroListPedidos["PRECIOFIJO"]).'">'.$s.'</option>';
-                                }
-                                echo '</select></td>'; 
-                            
-                            echo '<td>$'.$registroListPedidos["PRECIO"].'</td></tr>';
-                        } 
-                         ?>
                 </table>
+            </form>
+            <table height="30px">
+                <tr>
+                    <td></td>
+                </tr>
+            </table>
+        </tr>
+        <tr>
+            <td width="50%">
+                 <table align="center" border="2" cellspacing="0" width="80%" style="background-color:rgb(255,255,255);font-size:13px">
             </td>
-            <td width="70%">
-                 <table align="center" border="2" cellspacing="0" width="100%" style="background-color:rgb(255,255,255);font-size:13px">
-         <tr align="center">
-             <td>
-                 <b>Promoción N°</b>
-             </td>
+        </tr>    
+        <tr align="center">
              <td>
                  <b>Tabla</b>
              </td>
@@ -126,21 +200,9 @@ function guardarCantidadPrecioPedido(valor){
          <?php
              while ($registroConsultaPedidoPromocion = $resConsultaPedidoPromocion->fetch_array(MYSQLI_BOTH)) {
                  $id=$registroConsultaPedidoPromocion["ID"];
-                 $numeroPromocion=$registroConsultaPedidoPromocion["NUMEROPROMOCION"];
                  $total=$registroConsultaPedidoPromocion["TOTAL"];
                  echo '<tr align="center" >
-                         <td valign="middle" >
-                         <input type="button" value="Promoción '.$numeroPromocion.'" style="width:120px;height:25px;';
-                                
-                        $btnAgrupate="SELECT * FROM BTN_AGRUPATE_TMP";
-                        $resBtnAgrupate= $conexion->query($btnAgrupate);
-                        while ($registroBtnAgrupate = $resBtnAgrupate->fetch_array(MYSQLI_BOTH)) {
-                            if ($registroBtnAgrupate["BOTONID"] == $id) {
-                                echo 'background-color: GRAY;color: WHITE;';
-                            }
-                        }
-                echo '" onClick="agregarAgrupate('.$id.','.$total.')"/></td>                         
-                         <td>';
+                         <td valign="middle" >';
                 $consultaPedidoPromocionPiezas="SELECT tabla.ID,tabla.CANTIDADPIEZAS FROM pedidopromocionpiezas
                                                 INNER JOIN tabla ON tabla.ID = pedidopromocionpiezas.BTNID
                                                 WHERE pedidopromocionpiezas.PEDIDOPROMOCIONID=$id";
@@ -209,13 +271,15 @@ function guardarCantidadPrecioPedido(valor){
          
      </table>
 
-			</td>
+    </td>
         </tr>
     </table>
     <table width="100%" cellspacing="40">
         <tr align="center">
             <td>
-                <input type="button" value="Atras" style="width:120px;height:40px" onClick=" window.location.href = 'pedido.php'">
+                <?php
+                   echo '<input type="button" value="Atras" style="width:120px;height:40px" onClick="agregarAgrupate('.$id.','.$total.')"/>';
+                ?>
             </td>
             <td>
                 <input type="button" value="Borrar Todo" style="width:120px;height:40px">

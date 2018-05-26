@@ -33,7 +33,7 @@
                         inner join pedidopromocion on pedidopromocion.ID = promociones.PEDIDOPROMOCIONID";
             $resPromocion =  $conexion->query($promocion);  
     ///////////////////////////////////////////////////////////////////////////////////////////////// 
-            $agrupate="SELECT agrupate.ID PEDIDOSYAID,agrupate.NUMEROPROMOCION,agrupate.PEDIDOPROMOCIONID,pedidopromocion.NOMBRE,btn_agrupate_tmp.CANTIDAD,btn_agrupate_tmp.PRECIO FROM btn_agrupate_tmp
+            $agrupate="SELECT agrupate.ID AGRUPATEID,agrupate.NUMEROPROMOCION,agrupate.PEDIDOPROMOCIONID,pedidopromocion.NOMBRE,btn_agrupate_tmp.CANTIDAD,btn_agrupate_tmp.PRECIO FROM btn_agrupate_tmp
                         inner join agrupate on agrupate.PEDIDOPROMOCIONID = btn_agrupate_tmp.BOTONID
                         inner join pedidopromocion on pedidopromocion.ID = agrupate.PEDIDOPROMOCIONID";
             $resAgrupate =  $conexion->query($agrupate);

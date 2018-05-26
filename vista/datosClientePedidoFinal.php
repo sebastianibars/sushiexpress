@@ -119,34 +119,34 @@ if (isset($_GET["accion"])){
     <script type="text/javascript">
 
     function cargarCliente(idCliente,idTelefono,idDireccion){
-            var cliente=document.getElementById("clienteId").value;
-            var telefono=document.getElementById("telefonoId").value;
-            window.location.href ='datosClientePedidoFinal.php?accion=cargar&cliente='+idCliente+'&telefono='+idTelefono+'&direccion='+idDireccion+'&clienteBuscar='+cliente+'&telefonoBuscar='+telefono;            
-        }
+        var cliente=document.getElementById("clienteId").value;
+        var telefono=document.getElementById("telefonoId").value;
+        window.location.href ='datosClientePedidoFinal.php?accion=cargar&cliente='+idCliente+'&telefono='+idTelefono+'&direccion='+idDireccion+'&clienteBuscar='+cliente+'&telefonoBuscar='+telefono;            
+    }
         
-        function buscar(){
-            var cliente=document.getElementById("clienteId").value;
-            var telefono=document.getElementById("telefonoId").value;
-            var url='datosClientePedidoFinal.php?accion=buscar&';
-            var union=false;
-            if(cliente!="" && telefono!=""){
-                union=true;
-            }
-            if(cliente!=""){
-                url=url+'cliente='+cliente+'&';                
-            }
-            if(telefono!=""){
-                if(union){
-                    url=url+'&';
-                }
-                url=url+'telefono='+telefono;
-            }
-            window.location.href =url;
+    function buscar(){
+        var cliente=document.getElementById("clienteId").value;
+        var telefono=document.getElementById("telefonoId").value;
+        var url='datosClientePedidoFinal.php?accion=buscar&';
+        var union=false;
+        if(cliente!="" && telefono!=""){
+            union=true;
         }
+        if(cliente!=""){
+            url=url+'cliente='+cliente+'&';                
+        }
+        if(telefono!=""){
+            if(union){
+                url=url+'&';
+            }
+            url=url+'telefono='+telefono;
+        }
+        window.location.href =url;
+    }
         
-        function volverPaginaPadre(){
-             window.parent.cambiarPagina();
-        }
+    function volverPaginaPadre(){
+         window.parent.cambiarPagina();
+    }
 
     </script>
     
