@@ -23,7 +23,7 @@ while ($registroConsultaPedidoId = $resConsultaPedidoId->fetch_array(MYSQLI_BOTH
     $pedidoFinalId = $registroConsultaPedidoId["PEDIDOFINALID"];
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-$listaCodigos = "SELECT CODIGO FROM PEDIDOFINAL_AGRUPATE_CODIGO_TMP WHERE PEDIDOFINALID = $pedidoFinalId"; 
+$listaCodigos = "SELECT CODIGO FROM AGRUPATE_CODIGO_TMP WHERE PEDIDOFINALID = $pedidoFinalId"; 
 $resListaCodigos = $conexion->query($listaCodigos);
 
 $codigo1Formulario ="";
@@ -60,22 +60,25 @@ if (isset($_GET["accion"])) {
                 $pedidoFinalId = $registroConsultaPedidoFinal["PEDIDOFINALID"];
             }            
             
-            $eliminarCodTmp = "DELETE FROM PEDIDOFINAL_AGRUPATE_CODIGO_TMP WHERE PEDIDOFINALID = $pedidoFinalId";
+            $eliminarCodTmp = "DELETE FROM AGRUPATE_CODIGO_TMP WHERE PEDIDOFINALID = $pedidoFinalId";
             $conexion->query($eliminarCodTmp);
             
             $borrarDatosTablaTemporal = "delete from BTN_AGRUPATE_TMP where BOTONID = $idBoton";
             $conexion->query($borrarDatosTablaTemporal);
+            $cantPedidos = 0;
             
             if($codigo1 != '' || $codigo2 != ''){
                 if($codigo1 != ''){
-                    $guardarCodigo = "INSERT INTO PEDIDOFINAL_AGRUPATE_CODIGO_TMP (PEDIDOFINALID,CODIGO) VALUES ($pedidoFinalId,$codigo1)";
+                    $guardarCodigo = "INSERT INTO AGRUPATE_CODIGO_TMP (PEDIDOFINALID,CODIGO) VALUES ($pedidoFinalId,$codigo1)";
                     $conexion->query($guardarCodigo);  
+                    $cantPedidos = $cantPedidos+1;
                 }
                 if($codigo2 != ''){
-                    $guardarCodigo = "INSERT INTO PEDIDOFINAL_AGRUPATE_CODIGO_TMP (PEDIDOFINALID,CODIGO) VALUES ($pedidoFinalId,$codigo2)";
-                    $conexion->query($guardarCodigo);  
+                    $guardarCodigo = "INSERT INTO AGRUPATE_CODIGO_TMP (PEDIDOFINALID,CODIGO) VALUES ($pedidoFinalId,$codigo2)";
+                    $conexion->query($guardarCodigo); 
+                    $cantPedidos = $cantPedidos+1;
                 }
-                $guardarDatosTablaTemporal = "insert into BTN_AGRUPATE_TMP (BOTONID,CANTIDAD,PRECIO) values ($idBoton,1,$precio)";
+                $guardarDatosTablaTemporal = "insert into BTN_AGRUPATE_TMP (BOTONID,CANTIDAD,PRECIO) values ($idBoton,$cantPedidos,$precio)";
                 $conexion->query($guardarDatosTablaTemporal);
             }
             
@@ -125,12 +128,17 @@ if (isset($_GET["accion"])) {
             document.getElementById('divCodigo2').style.visibility = "visible";
         }
     }
+    
+    function borrarCodigos(){
+        document.getElementById('codigo1').value = '';
+        document.getElementById('codigo2').value = '';
+    }
  
 
 </script>
 
 <html>
-    <div align="center"><h1>Agrupate</h1></div>
+    <div align="center"><h1>Agrupate/ClickOn</h1></div>
     <body style="background-color:lightblue;">
     <table width="100%" >
         <tr>
@@ -282,7 +290,7 @@ if (isset($_GET["accion"])) {
                 ?>
             </td>
             <td>
-                <input type="button" value="Borrar Todo" style="width:120px;height:40px">
+                <input type="button" value="Borrar Todo" style="width:120px;height:40px" onclick="borrarCodigos()">
             </td>
         </tr>
     </table>

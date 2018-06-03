@@ -3,7 +3,15 @@
     include ("../conexion/conexion.php");
 
     $conexion = crearConexion();
-        
+    $consultarRetiraPedidoGuardar="select * from BTN_RETIRO_PEDIDO";
+    $resConsultarRetiraPedidoGuardar =  $conexion->query($consultarRetiraPedidoGuardar); 
+    $cantFilas = $resConsultarRetiraPedidoGuardar->num_rows;
+    if($cantFilas==0){
+        $existePedidoRetiro = 0;
+    }else{
+        $existePedidoRetiro = 1;
+    }
+    
     if (isset($_GET["accion"])) {
         if (($_GET["accion"]) == 'guardarPedidoFinal') {
             
@@ -211,6 +219,9 @@
             $conexion->query($borrarTablas);
             $borrarTablas="delete from tmp_fecha_entrega";
             $conexion->query($borrarTablas);
+            $borrarTablas="delete from agrupate_codigo_tmp";
+            $conexion->query($borrarTablas);
+            
            
             if($retiroPedido==1){
                 Header("Location: finalPedidoRetira.php");
@@ -227,7 +238,7 @@
                 $consultarRetiraPedido="select * from BTN_RETIRO_PEDIDO where BOTONID=$botonId";
                 $resRetiraPedido =  $conexion->query($consultarRetiraPedido); 
                 $cantFilas = $resRetiraPedido->num_rows;
-                if($cantFila==0){
+                if($cantFilas==0){
                     $borrarRetiroPedido="delete from BTN_RETIRO_PEDIDO";
                     $conexion->query($borrarRetiroPedido); 
                     $guardarRetiroPedido="insert into BTN_RETIRO_PEDIDO (BOTONID) values ($botonId)"; 
@@ -238,6 +249,75 @@
             }
             
         }
+         if (($_GET["accion"]) == 'eliminarTabla') {
+            $id = ($_GET["id"]);
+            $borrarTablas="delete from btn_cantidad_piezas_tmp where id = $id";
+            $conexion->query($borrarTablas);
+            $borrarTablas="delete from btn_variedad_tmp where id = $id";
+            $conexion->query($borrarTablas); 
+            Header("Location: pedido.php"); 
+         }         
+         if (($_GET["accion"]) == 'eliminarDelicia') {
+            $id = ($_GET["id"]);
+            $borrarTablas="delete from btn_delicia_tmp where botonid = $id";
+            $conexion->query($borrarTablas);
+            Header("Location: pedido.php"); 
+         }
+         if (($_GET["accion"]) == 'eliminarBebida') {
+            $id = ($_GET["id"]);
+            $borrarTablas="delete from btn_bebida_tmp where botonid = $id";
+            $conexion->query($borrarTablas);
+            Header("Location: pedido.php"); 
+         }
+         if (($_GET["accion"]) == 'eliminarAdicional') {
+            $id = ($_GET["id"]);
+            $borrarTablas="delete from btn_adicional_tmp where botonid = $id";
+            $conexion->query($borrarTablas);
+            Header("Location: pedido.php"); 
+         }
+         if (($_GET["accion"]) == 'eliminarPedidosYa') {
+            $id = ($_GET["id"]);
+            $borrarTablas="delete from btn_pedidosya_tmp where botonid = $id";
+            $conexion->query($borrarTablas);
+            Header("Location: pedido.php"); 
+         }
+         if (($_GET["accion"]) == 'eliminarAgrupate') {
+            $id = ($_GET["id"]);
+            $borrarTablas="delete from btn_agrupate_tmp where botonid = $id";
+            $conexion->query($borrarTablas);
+            $borrarTablas="delete from AGRUPATE_CODIGO_TMP";
+            $conexion->query($borrarTablas);            
+            
+            Header("Location: pedido.php"); 
+         }
+         if (($_GET["accion"]) == 'eliminarPromocion') {
+            $id = ($_GET["id"]);
+            $borrarTablas="delete from btn_promociones_tmp where botonid = $id";
+            $conexion->query($borrarTablas);
+            Header("Location: pedido.php"); 
+         }
+         if (($_GET["accion"]) == 'eliminarPedido') {
+            $borrarTablas="delete from btn_cantidad_piezas_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="delete from btn_delicia_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="delete from btn_bebida_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="delete from btn_adicional_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="delete from btn_pedidosya_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="delete from btn_promociones_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="delete from btn_variedad_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="delete from btn_agrupate_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="delete from agrupate_codigo_tmp";
+            $conexion->query($borrarTablas);
+            Header("Location: pedido.php"); 
+         }
+                  
     }else{
         
         $consultaBtnCantSeleccion="SELECT BOTONID FROM BTN_CANTIDAD_PIEZAS_TMP_SELECCION";
@@ -278,27 +358,27 @@
                   inner join tabla on tabla.id = btn_cantidad_piezas_tmp.BOTONID";
         $resTablas =  $conexion->query($tablas);    
         /////////////////////////////////////////////////////////////////////////////////////
-        $delicias ="SELECT delicia.NOMBRE,btn_delicia_tmp.CANTIDAD,btn_delicia_tmp.PRECIO FROM btn_delicia_tmp
+        $delicias ="SELECT btn_delicia_tmp.BOTONID,delicia.NOMBRE,btn_delicia_tmp.CANTIDAD,btn_delicia_tmp.PRECIO FROM btn_delicia_tmp
                     inner join delicia on delicia.id = btn_delicia_tmp.BOTONID";
         $resDelicias =  $conexion->query($delicias);
         ////////////////////////////////////////////////////////////////////////////////////////////
-        $bebidas ="SELECT bebida.NOMBRE,btn_bebida_tmp.CANTIDAD,btn_bebida_tmp.PRECIO FROM btn_bebida_tmp
+        $bebidas ="SELECT btn_bebida_tmp.BOTONID,bebida.NOMBRE,btn_bebida_tmp.CANTIDAD,btn_bebida_tmp.PRECIO FROM btn_bebida_tmp
                    inner join bebida on bebida.id = btn_bebida_tmp.BOTONID";
         $resBebidas =  $conexion->query($bebidas);
         //////////////////////////////////////////////////////////////////////////////////////////
-        $adicional="SELECT adicional.NOMBRE,btn_adicional_tmp.CANTIDAD,btn_adicional_tmp.PRECIO FROM btn_adicional_tmp
+        $adicional="SELECT btn_adicional_tmp.BOTONID,adicional.NOMBRE,btn_adicional_tmp.CANTIDAD,btn_adicional_tmp.PRECIO FROM btn_adicional_tmp
                     inner join adicional on adicional.id = btn_adicional_tmp.BOTONID";
         $resAdicional =  $conexion->query($adicional);
         ///////////////////////////////////////////////////////////////////////////////////////////
-        $pedidosYa="SELECT pedidosya.NUMEROPROMOCION,btn_pedidosya_tmp.CANTIDAD,btn_pedidosya_tmp.PRECIO  FROM btn_pedidosya_tmp
+        $pedidosYa="SELECT btn_pedidosya_tmp.BOTONID,pedidosya.NUMEROPROMOCION,btn_pedidosya_tmp.CANTIDAD,btn_pedidosya_tmp.PRECIO  FROM btn_pedidosya_tmp
                     inner join pedidosya on pedidosya.PEDIDOPROMOCIONID = btn_pedidosya_tmp.BOTONID";
         $resPedidosYa =  $conexion->query($pedidosYa);
         /////////////////////////////////////////////////////////////////////////////////////////////////
-        $promocion="SELECT promociones.NUMEROPROMOCION, btn_promociones_tmp.CANTIDAD, btn_promociones_tmp.PRECIO FROM btn_promociones_tmp
+        $promocion="SELECT btn_promociones_tmp.BOTONID,promociones.NUMEROPROMOCION, btn_promociones_tmp.CANTIDAD, btn_promociones_tmp.PRECIO FROM btn_promociones_tmp
                     inner join promociones on promociones.PEDIDOPROMOCIONID = btn_promociones_tmp.BOTONID";
         $resPromocion =  $conexion->query($promocion); 
         /////////////////////////////////////////////////////////////////////////////////////////////////
-        $agrupate="SELECT agrupate.NUMEROPROMOCION,btn_agrupate_tmp.CANTIDAD,btn_agrupate_tmp.PRECIO  FROM btn_agrupate_tmp
+        $agrupate="SELECT btn_agrupate_tmp.BOTONID,agrupate.NUMEROPROMOCION,btn_agrupate_tmp.CANTIDAD,btn_agrupate_tmp.PRECIO  FROM btn_agrupate_tmp
                     inner join agrupate on agrupate.PEDIDOPROMOCIONID = btn_agrupate_tmp.BOTONID";
         $resAgrupate =  $conexion->query($agrupate);
         /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -344,45 +424,199 @@
     <div align="center"><h1>Preparar pedidos</h1></div>
     <script>
               
-       function updateTime() {
-            var fecha = new Date();
-            var dia = fecha.getDate();
-            var mes = fecha.getMonth()+1;
-            var año = fecha.getFullYear();
-            var horas = fecha.getHours();
-            var minutos = fecha.getMinutes();
-            if(minutos<10){
-                minutos='0'+minutos;
-            }
-            if(horas<10){
-                horas='0'+horas;
-            }
-            if(mes<10){
-                mes='0'+mes;
-            }
-            if(dia<10){
-                dia='0'+dia;
-            }
-            document.getElementById('contenedorDia').innerHTML = '' + dia+'/'+mes+'/'+año;
-            document.getElementById('contenedorHora').innerHTML = ''+horas + ':' + minutos;
-            setTimeout('updateTime()', 1000);
-        }
-        
-        function retiraPedido(retiraId){
-            window.location.href = "pedido.php?accion=guardarRetiroPedido&botonId=" + retiraId;
-        }
-        
-        function guardarPedidoFinal(){
-            var diaEntrega=document.getElementById("diaEntrega").value;
-            var mesEntrega=document.getElementById("mesEntrega").value;
-            var añoEntrega=document.getElementById("añoEntrega").value;
-            var horaEntrega=document.getElementById("horaEntrega").value;
-            var minutoEntrega=document.getElementById("minutoEntrega").value;
-            window.location.href = "pedido.php?accion=guardarPedidoFinal&dia="+diaEntrega+"&mes="+mesEntrega+"&año="+añoEntrega+"&hora="+horaEntrega+"&minutos="+minutoEntrega;
-        }
+    function updateTime() {
+         var fecha = new Date();
+         var dia = fecha.getDate();
+         var mes = fecha.getMonth()+1;
+         var año = fecha.getFullYear();
+         var horas = fecha.getHours();
+         var minutos = fecha.getMinutes();
+         if(minutos<10){
+             minutos='0'+minutos;
+         }
+         if(horas<10){
+             horas='0'+horas;
+         }
+         if(mes<10){
+             mes='0'+mes;
+         }
+         if(dia<10){
+             dia='0'+dia;
+         }
+         document.getElementById('contenedorDia').innerHTML = '' + dia+'/'+mes+'/'+año;
+         document.getElementById('contenedorHora').innerHTML = ''+horas + ':' + minutos;
+         setTimeout('updateTime()', 1000);
+     }
 
-    </script>
+     function retiraPedido(retiraId){
+         window.location.href = "pedido.php?accion=guardarRetiroPedido&botonId=" + retiraId;
+     }
+
+     function guardarPedidoFinal(){
+         var existePedidoRetiro = <?php echo $existePedidoRetiro; ?>;
+         if(existePedidoRetiro == 1){
+             var diaEntrega=document.getElementById("diaEntrega").value;
+             var mesEntrega=document.getElementById("mesEntrega").value;
+             var añoEntrega=document.getElementById("añoEntrega").value;
+             var horaEntrega=document.getElementById("horaEntrega").value;
+             var minutoEntrega=document.getElementById("minutoEntrega").value;
+             window.location.href = "pedido.php?accion=guardarPedidoFinal&dia="+diaEntrega+"&mes="+mesEntrega+"&año="+añoEntrega+"&hora="+horaEntrega+"&minutos="+minutoEntrega;
+         }else{
+            var mimodal = crearModalTexto("DEBE SELECCIONAR TIPO DE RETIRO DEL PEDIDO");
+            mostrarModal(mimodal);
+         }
+     }
+        
+    function crearModalTexto(msj) {
+        var f = document.createElement("div");
+        var m = document.createElement("div");
+        var t = document.createTextNode(msj);
+        f.appendChild(m);
+        m.appendChild(t);
+        f.className = "contenedor";
+        m.className = "modal";
+        var cerrar = document.createElement("div");
+        var x = document.createTextNode("X");
+        cerrar.appendChild(x);
+        cerrar.className = "cerrar";
+        cerrar.addEventListener("click", function () {
+            f.style.visibility = "hidden";
+        });
+        m.appendChild(cerrar);
+        document.body.appendChild(f);
+        return f;
+    }
+
+    function mostrarModal(obj) {
+        obj.style.visibility = "visible";
+    }
     
+    function eliminarTabla(tablaId){
+        window.location.href = "pedido.php?accion=eliminarTabla&id=" + tablaId;
+    }
+    
+    function eliminarDelicia(deliciaId){
+        window.location.href = "pedido.php?accion=eliminarDelicia&id=" + deliciaId;
+    }
+    
+    function eliminarBebida(bebidaId){
+        window.location.href = "pedido.php?accion=eliminarBebida&id=" + bebidaId;
+    }
+
+    function eliminarAdicional(adicionalId){
+        window.location.href = "pedido.php?accion=eliminarAdicional&id=" + adicionalId;
+    }
+    
+    function eliminarPedidosYa(pedidosYaId){
+        window.location.href = "pedido.php?accion=eliminarPedidosYa&id=" + pedidosYaId;
+    }
+    
+    function eliminarAgrupate(agrupateId){
+        window.location.href = "pedido.php?accion=eliminarAgrupate&id=" + agrupateId;
+    }
+    
+    function eliminarPromocion(promocionId){
+        window.location.href = "pedido.php?accion=eliminarPromocion&id=" + promocionId;
+    }
+    
+    function borrarAtras(){
+        window.location.href = "inicio.php?accion=borrarDatos";
+    }
+    
+    function eliminarPedido(){
+        window.location.href = "pedido.php?accion=eliminarPedido";
+    }
+    
+    function cargarTotal(idtotal){
+        var idtotalSelect = idtotal.split("_");
+        var id = idtotalSelect[0];
+        var total = idtotalSelect[1];
+        var div = '';
+        if(id==2 || id==3){
+            var simbolo ='$';
+            var tipoDescuento='1';
+            if(id==2){
+                simbolo='%';
+                tipoDescuento='2';
+            }
+            div = '<table align="center" valign="center"><tr ><td align="right"><b>subtotal:</b></td><td align="center"><b>$'+total+'</b></td></tr><tr><td align="right"><b>-</b></td><td align="center" style="border-bottom: 2px solid;width:100px;"><b>'+simbolo+'</b><input type="text" size="2px" onkeyup="calcularDescuento('+tipoDescuento+',event,'+total+')" id="valueDescuento"></td></tr><tr style="font-size: 23px;"><td align="right"><b>Total:</b></td><td align="center"><div id="divSumaTotal"><b>$'+total+'</b></div></td></tr></table>';
+        }else if(id==1){
+            div = '<table align="center" valign="center"><tr style="font-size: 23px;"><td align="right"><b>Total:</b></td><td align="center"><b>$'+total+'</b></td></tr></table>';
+        }
+       
+	document.getElementById("divTotal").innerHTML  = div;
+    }
+    
+    function calcularDescuento(tipoDescuento,value,subTotal){
+        keycode = (value.keyCode==0) ? value.which : value.keyCode;
+        //console.log(keycode);
+  
+        var numero = '';
+        var total;
+        if(document.getElementById("valueDescuento").value != ""){
+            numero = document.getElementById("valueDescuento").value;    
+        }
+        
+        if(numero != ''){
+        console.log(numero);
+       // numero = numero + value.key;
+            if(tipoDescuento ==1){
+                total = parseFloat(subTotal) - parseFloat(numero);
+                if(total < 0){
+                    total=0;
+                }
+            
+            }
+        
+            if(tipoDescuento==2){
+                if(numero<10){
+                    numero = '0.0'+numero;   
+                }else if(numero < 100){
+                    numero = '0.'+numero;      
+                }else{
+                    numero = '1';
+                }
+                total = parseFloat(subTotal) - (parseFloat(subTotal)*parseFloat(numero));
+            }
+        }else{
+            total = subTotal;
+        }
+        var div = '<b>$'+total+'</b>';
+        document.getElementById("divSumaTotal").innerHTML  = div;
+    }
+    </script>
+     <style>
+        .contenedor {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0px;
+            left: 0px;
+            background-color: rgba(0,0,0,0.5);
+            visibility: hidden;
+        }
+        .modal {
+            background-color: white;
+            border-radius: 4px;
+            padding: 25px;
+            margin: 10% auto;
+            width: 30%;
+            height: auto;
+        }
+        .cerrar {
+            width: auto;
+            height: auto;
+            cursor: pointer;
+            color: rgba(255,0,0,0.5);
+            padding: 7px;
+            float: right;
+            font-family: "Calibri";
+            font-weight: bold;
+        }
+        .cerrar:hover{
+            color: rgba(255,0,0,1);
+        }
+    </style>
     <body onload="javascript:updateTime()" style="background-color:lightblue;">
         <table width="90%" align="center" height="100px" >
             <tr valign="top">
@@ -495,18 +729,23 @@
                             <td align="center">
                                 <b>Precio</b>
                             </td>
+                            <td>
+                                
+                            </td>
                         </tr>
                     <?php
                     $total=0;
                         while ($registroTablas = $resTablas->fetch_array(MYSQLI_BOTH)) {
                             echo '<tr align="center"><td>'.$registroTablas["CANTIDADPIEZAS"].' PIEZAS</td>';  
-                            $variedadTabla ="SELECT variedadtabla.NOMBRE,btn_variedad_tmp.CANTIDAD FROM btn_variedad_tmp
+                            $variedadTabla ="SELECT btn_variedad_tmp.ID,variedadtabla.NOMBRE,btn_variedad_tmp.CANTIDAD 
+                                            FROM btn_variedad_tmp
                                             inner join variedadtabla on variedadtabla.ID = btn_variedad_tmp.BOTONID
                                             where btn_variedad_tmp.ID =".$registroTablas["BTNCANTIDADID"];
                             $resVariedadTabla = $conexion->query($variedadTabla);
                             echo '</td><td>';
                             $i=0;
                             while ($registroVariedadTabla = $resVariedadTabla->fetch_array(MYSQLI_BOTH)) {
+                                $idTablaEliminar = $registroVariedadTabla["ID"];
                                 $i++;
                                 if($i!=1){
                                     echo '<br>';
@@ -527,53 +766,96 @@
                                     echo $registroVariedadTabla["CANTIDAD"];
                                 }
                             }
-                            echo '</td><td>$'.$registroTablas["PRECIO"].'</td></tr>';
+                            echo '</td><td>$'.$registroTablas["PRECIO"].'</td>';
+                            echo '<td align="center" style="width:60px;">';
+                                echo '<input type="button" value="Eiminar" style="width:60px;height:25px;" onClick="eliminarTabla('.$idTablaEliminar.')">';
+                            echo '</td></tr>'; 
                             $total=$total+$registroTablas["PRECIO"];
                         }
                         while ($registroDelicias = $resDelicias->fetch_array(MYSQLI_BOTH)) {
                             echo '<tr align="center"><td>'.$registroDelicias["NOMBRE"].'</td>
-                                 <td>-</td>
-                                 <td>'.$registroDelicias["CANTIDAD"].'</td>
-                                 <td>$'.$registroDelicias["PRECIO"].'</td></tr>';
+                                    <td>-</td>
+                                    <td>'.$registroDelicias["CANTIDAD"].'</td>
+                                    <td>$'.$registroDelicias["PRECIO"].'</td>
+                                    <td align="center" style="width:60px;">
+                                       <input type="button" value="Eiminar" style="width:60px;height:25px;" onClick="eliminarDelicia('.$registroDelicias["BOTONID"].')">
+                                    </td>
+                                 </tr>';
                                 $total=$total+$registroDelicias["PRECIO"];
                         }
                         while ($registroBebidas = $resBebidas->fetch_array(MYSQLI_BOTH)) {
                             echo '<tr align="center"><td>'.$registroBebidas["NOMBRE"].'</td>
                                  <td>-</td>
                                  <td>'.$registroBebidas["CANTIDAD"].'</td>
-                                 <td>$'.$registroBebidas["PRECIO"].'</td></tr>';
+                                 <td>$'.$registroBebidas["PRECIO"].'</td>
+                                 <td align="center" style="width:60px;">
+                                    <input type="button" value="Eiminar" style="width:60px;height:25px;" onClick="eliminarBebida('.$registroBebidas["BOTONID"].')">
+                                 </td>
+                                 </tr>';
                                 $total=$total+$registroBebidas["PRECIO"];
                         } 
                         while ($registroAdicional = $resAdicional->fetch_array(MYSQLI_BOTH)) {
                             echo '<tr align="center"><td>'.$registroAdicional["NOMBRE"].'</td>
                                  <td>-</td>
                                  <td>'.$registroAdicional["CANTIDAD"].'</td>
-                                 <td>$'.$registroAdicional["PRECIO"].'</td></tr>';
+                                 <td>$'.$registroAdicional["PRECIO"].'</td>
+                                 <td align="center" style="width:60px;">
+                                    <input type="button" value="Eiminar" style="width:60px;height:25px;" onClick="eliminarAdicional('.$registroAdicional["BOTONID"].')">
+                                 </td>
+                                 </tr>';
                                 $total=$total+$registroAdicional["PRECIO"];
                         } 
                         while ($registroPedidosYa = $resPedidosYa->fetch_array(MYSQLI_BOTH)) {
                             echo '<tr align="center"><td>PEDIDOS YA - Promoción N°'.$registroPedidosYa["NUMEROPROMOCION"].'</td>
                                  <td>-</td>
                                  <td>'.$registroPedidosYa["CANTIDAD"].'</td>
-                                 <td>$'.$registroPedidosYa["PRECIO"].'</td></tr>';
+                                 <td>$'.$registroPedidosYa["PRECIO"].'</td>
+                                 <td align="center" style="width:60px;">
+                                    <input type="button" value="Eiminar" style="width:60px;height:25px;" onClick="eliminarPedidosYa('.$registroPedidosYa["BOTONID"].')">
+                                 </td>
+                                 </tr>';    
                                 $total=$total+$registroPedidosYa["PRECIO"];
                         } 
                         while ($registroAgrupate = $resAgrupate->fetch_array(MYSQLI_BOTH)) {
                             echo '<tr align="center"><td>AGRUPATE - Promoción N°'.$registroAgrupate["NUMEROPROMOCION"].'</td>
                                  <td>-</td>
                                  <td>'.$registroAgrupate["CANTIDAD"].'</td>
-                                 <td>$'.$registroAgrupate["PRECIO"].'</td></tr>';
+                                 <td>$'.$registroAgrupate["PRECIO"].'</td>
+                                 <td align="center" style="width:60px;">
+                                    <input type="button" value="Eiminar" style="width:60px;height:25px;" onClick="eliminarAgrupate('.$registroAgrupate["BOTONID"].')">
+                                 </td>
+                                 </tr>';     
                                 $total=$total+$registroAgrupate["PRECIO"];
                         }
                         while ($registroPromocion = $resPromocion->fetch_array(MYSQLI_BOTH)) {
                             echo '<tr align="center"><td>PROMOCIONES - Promoción N°'.$registroPromocion["NUMEROPROMOCION"].'</td>
                                  <td>-</td>
                                  <td>'.$registroPromocion["CANTIDAD"].'</td>
-                                 <td>$'.$registroPromocion["PRECIO"].'</td></tr>';
+                                 <td>$'.$registroPromocion["PRECIO"].'</td>
+                                 <td align="center" style="width:60px;">
+                                    <input type="button" value="Eiminar" style="width:60px;height:25px;" onClick="eliminarPromocion('.$registroPromocion["BOTONID"].')">
+                                 </td>
+                                 </tr>';     
                                 $total=$total+$registroPromocion["PRECIO"];
                         } 
                         echo '</table>
-                    <h2 align="center">Total: $'.$total.'</h2>';
+                            <select style="margin-left:200px;margin-top:20px" onchange="cargarTotal(this.value)">
+                            <option value="1_'.$total.'">Sin descuento</option>
+                            <option value="2_'.$total.'">Descuento porcentaje</option>
+                            <option value="3_'.$total.'">Descuento valor</option>
+                        </select>
+                        <div id="divTotal">
+                            <table align="center" valign="center">                                 
+                                <tr style="font-size: 23px;">
+                                    <td align="right">
+                                        <b>Total:</b>
+                                    </td>
+                                    <td align="center">
+                                        <b>$'.$total.'</b>
+                                    </td>
+                                </tr>                                
+                            </table>
+                         </div>';
                     ?>
 
                  
@@ -634,10 +916,10 @@
         <table cellspacing="20" align="center" width="80%" >
             <tr align="center">
                 <td>
-                    <input type="button" value="Atras" style="width:120px;height:40px" onClick=" window.location.href = 'inicio.php'">
+                    <input type="button" value="Atras" style="width:120px;height:40px" onClick="borrarAtras()">
                 </td>
                 <td>
-                    <input type="button" value="Eliminar pedido" style="width:120px;height:40px">
+                    <input type="button" value="Eliminar pedido" style="width:120px;height:40px" onclick="eliminarPedido()">
                 </td>
                 <td>
                     <input type="button" value="Siguiente" style="width:120px;height:40px" onClick="guardarPedidoFinal()">

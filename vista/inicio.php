@@ -133,7 +133,7 @@
                 $cantComaPiezas = false;
                 while ($registroConsultaPedidoCompletoCantPiezas = $resConsultaPedidoCompletoCantPiezas->fetch_array(MYSQLI_BOTH)) {    
                     if($cantComaPiezas){
-                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.",";
+                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.", ";
                     }
                     $cantidadPiezasRelacionId = $registroConsultaPedidoCompletoCantPiezas["CANTIDADPIEZASIDRELACION"];
                     $consultaPedidoCompletoVariedad = "SELECT VARIEDADID,NOMBREVARIEDAD,CANTIDAD 
@@ -145,7 +145,7 @@
                     $cantComa = false;
                     while ($registroConsultaPedidoCompletoVariedad = $resConsultaPedidoCompletoVariedad->fetch_array(MYSQLI_BOTH)) {    
                         if($cantComa){
-                            $pedidoCompletoDetalle = $pedidoCompletoDetalle.",";
+                            $pedidoCompletoDetalle = $pedidoCompletoDetalle.", ";
                         }
                         $pedidoCompletoDetalle = $pedidoCompletoDetalle.$registroConsultaPedidoCompletoVariedad["NOMBREVARIEDAD"];
                         if($registroConsultaPedidoCompletoVariedad["CANTIDAD"]==0){
@@ -164,10 +164,10 @@
                 $comaDelicia = false;
                 while ($registroConsultaDelicia = $resConsultaDelicia->fetch_array(MYSQLI_BOTH)) {
                     if(strlen($pedidoCompletoDetalle)!=0 && !$comaDelicia){
-                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.",";
+                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.", ";
                     }
                     if($comaDelicia){
-                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.",";
+                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.", ";
                     }
                     $pedidoCompletoDetalle = $pedidoCompletoDetalle.$registroConsultaDelicia["NOMBREDELICIA"]."(".$registroConsultaDelicia["CANTIDAD"].")";
                     $comaDelicia = true;
@@ -178,10 +178,10 @@
                 $comaBebida = false;
                 while ($registroConsultaBebida = $resConsultaBebida->fetch_array(MYSQLI_BOTH)) {
                     if(strlen($pedidoCompletoDetalle)!=0 && !$comaBebida){
-                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.",";
+                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.", ";
                     }
                     if($comaBebida){
-                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.",";
+                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.", ";
                     }
                     $pedidoCompletoDetalle = $pedidoCompletoDetalle.$registroConsultaBebida["NOMBREBEBIDA"]."(".$registroConsultaBebida["CANTIDAD"].")";
                     $comaBebida = true;
@@ -192,10 +192,10 @@
                 $comaPedidosYa = false;
                 while ($registroConsultaPedidosYa = $resConsultaPedidosYa->fetch_array(MYSQLI_BOTH)) {
                     if(strlen($pedidoCompletoDetalle)!=0 && !$comaPedidosYa){
-                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.",";
+                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.", ";
                     }
                     if($comaPedidosYa){
-                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.",";
+                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.", ";
                     }
                     $pedidoCompletoDetalle = $pedidoCompletoDetalle.$registroConsultaPedidosYa["NOMBREPROMOCION"]."(".$registroConsultaPedidosYa["CANTIDAD"].")";
                     $comaPedidosYa = true;
@@ -206,10 +206,10 @@
                 $comaAdicional = false;
                 while ($registroConsultaAdicional = $resConsultaAdicional->fetch_array(MYSQLI_BOTH)) {
                     if(strlen($pedidoCompletoDetalle)!=0 && !$comaAdicional){
-                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.",";
+                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.", ";
                     }
                     if($comaAdicional){
-                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.",";
+                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.", ";
                     }
                     $pedidoCompletoDetalle = $pedidoCompletoDetalle.$registroConsultaAdicional["NOMBREADICIONAL"]."(".$registroConsultaAdicional["CANTIDAD"].")";
                     $comaAdicional = true;
@@ -220,10 +220,10 @@
                 $comaPromocion = false;
                 while ($registroConsultaPromocion = $resConsultaPromocion->fetch_array(MYSQLI_BOTH)) {
                     if(strlen($pedidoCompletoDetalle)!=0 && !$comaPromocion){
-                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.",";
+                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.", ";
                     }
                     if($comaPromocion){
-                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.",";
+                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.", ";
                     }
                     $pedidoCompletoDetalle = $pedidoCompletoDetalle.$registroConsultaPromocion["NOMBREPROMOCION"]."(".$registroConsultaPromocion["CANTIDAD"].")";
                     $comaPromocion = true;
@@ -234,10 +234,10 @@
                 $comaAgrupate = false;
                 while ($registroConsultaAgrupate = $resConsultaAgrupate->fetch_array(MYSQLI_BOTH)) {
                     if(strlen($pedidoCompletoDetalle)!=0 && !$comaAgrupate){
-                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.",";
+                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.", ";
                     }
                     if($comaAgrupate){
-                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.",";
+                        $pedidoCompletoDetalle = $pedidoCompletoDetalle.", ";
                     }
                     $pedidoCompletoDetalle = $pedidoCompletoDetalle.$registroConsultaAgrupate["NOMBREPROMOCION"]."(".$registroConsultaAgrupate["CANTIDAD"].")";
                     $comaAgrupate = true;
@@ -282,7 +282,34 @@
             $actualizarP = "UPDATE PEDIDOFINAL SET P = ".$idP." WHERE ID = ".$pedidoFinalId;
             $conexion->query($actualizarP);
             Header("Location: inicio.php");
+        }      
+        if (($_GET["accion"]) == 'borrarDatos') {
+            $borrarTablas="delete from btn_cantidad_piezas_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="delete from btn_delicia_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="delete from btn_bebida_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="delete from btn_adicional_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="delete from btn_pedidosya_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="delete from btn_promociones_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="delete from btn_variedad_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="delete from btn_agrupate_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="delete from btn_retiro_pedido";
+            $conexion->query($borrarTablas);
+            $borrarTablas="delete from tmp_fecha_entrega";
+            $conexion->query($borrarTablas);
+            $borrarTablas="delete from agrupate_codigo_tmp";
+            $conexion->query($borrarTablas);
+            Header("Location: inicio.php");
         }
+        
+        
     }else{
         sleep(1);
     }
@@ -462,7 +489,7 @@
                         $cantComaPiezas = false;
                         while ($registroConsultaPedidoCompletoCantPiezas = $resConsultaPedidoCompletoCantPiezas->fetch_array(MYSQLI_BOTH)) {    
                             if($cantComaPiezas){
-                                $pedidoCompleto = $pedidoCompleto.",";
+                                $pedidoCompleto = $pedidoCompleto.", ";
                             }
                             $cantidadPiezasRelacionId = $registroConsultaPedidoCompletoCantPiezas["CANTIDADPIEZASIDRELACION"];
                             $consultaPedidoCompletoVariedad = "SELECT VARIEDADID,NOMBREVARIEDAD,CANTIDAD 
@@ -474,7 +501,7 @@
                             $cantComa = false;
                             while ($registroConsultaPedidoCompletoVariedad = $resConsultaPedidoCompletoVariedad->fetch_array(MYSQLI_BOTH)) {    
                                 if($cantComa){
-                                    $pedidoCompleto = $pedidoCompleto.",";
+                                    $pedidoCompleto = $pedidoCompleto.", ";
                                 }
                                 $pedidoCompleto = $pedidoCompleto.$registroConsultaPedidoCompletoVariedad["NOMBREVARIEDAD"];
                                 if($registroConsultaPedidoCompletoVariedad["CANTIDAD"]==0){
@@ -493,10 +520,10 @@
                             $comaDelicia = false;
                             while ($registroConsultaDelicia = $resConsultaDelicia->fetch_array(MYSQLI_BOTH)) {
                                 if(strlen($pedidoCompleto)!=0 && !$comaDelicia){
-                                    $pedidoCompleto = $pedidoCompleto.",";
+                                    $pedidoCompleto = $pedidoCompleto.", ";
                                 }
                                 if($comaDelicia){
-                                    $pedidoCompleto = $pedidoCompleto.",";
+                                    $pedidoCompleto = $pedidoCompleto.", ";
                                 }
                                 $pedidoCompleto = $pedidoCompleto.$registroConsultaDelicia["NOMBREDELICIA"]."(".$registroConsultaDelicia["CANTIDAD"].")";
                                 $comaDelicia = true;
@@ -509,10 +536,10 @@
                             $comaBebida = false;
                             while ($registroConsultaBebida = $resConsultaBebida->fetch_array(MYSQLI_BOTH)) {
                                 if(strlen($pedidoCompleto)!=0 && !$comaBebida){
-                                    $pedidoCompleto = $pedidoCompleto.",";
+                                    $pedidoCompleto = $pedidoCompleto.", ";
                                 }
                                 if($comaBebida){
-                                    $pedidoCompleto = $pedidoCompleto.",";
+                                    $pedidoCompleto = $pedidoCompleto.", ";
                                 }
                                 $pedidoCompleto = $pedidoCompleto.$registroConsultaBebida["NOMBREBEBIDA"]."(".$registroConsultaBebida["CANTIDAD"].")";
                                 $comaBebida = true;
@@ -525,10 +552,10 @@
                             $comaPedidosYa = false;
                             while ($registroConsultaPedidosYa = $resConsultaPedidosYa->fetch_array(MYSQLI_BOTH)) {
                                 if(strlen($pedidoCompleto)!=0 && !$comaPedidosYa){
-                                    $pedidoCompleto = $pedidoCompleto.",";
+                                    $pedidoCompleto = $pedidoCompleto.", ";
                                 }
                                 if($comaPedidosYa){
-                                    $pedidoCompleto = $pedidoCompleto.",";
+                                    $pedidoCompleto = $pedidoCompleto.", ";
                                 }
                                 $pedidoCompleto = $pedidoCompleto.$registroConsultaPedidosYa["NOMBREPROMOCION"]."(".$registroConsultaPedidosYa["CANTIDAD"].")";
                                 $comaPedidosYa = true;
@@ -541,10 +568,10 @@
                             $comaAdicional = false;
                             while ($registroConsultaAdicional = $resConsultaAdicional->fetch_array(MYSQLI_BOTH)) {
                                 if(strlen($pedidoCompleto)!=0 && !$comaAdicional){
-                                    $pedidoCompleto = $pedidoCompleto.",";
+                                    $pedidoCompleto = $pedidoCompleto.", ";
                                 }
                                 if($comaAdicional){
-                                    $pedidoCompleto = $pedidoCompleto.",";
+                                    $pedidoCompleto = $pedidoCompleto.", ";
                                 }
                                 $pedidoCompleto = $pedidoCompleto.$registroConsultaAdicional["NOMBREADICIONAL"]."(".$registroConsultaAdicional["CANTIDAD"].")";
                                 $comaAdicional = true;
@@ -557,10 +584,10 @@
                             $comaPromocion = false;
                             while ($registroConsultaPromocion = $resConsultaPromocion->fetch_array(MYSQLI_BOTH)) {
                                 if(strlen($pedidoCompleto)!=0 && !$comaPromocion){
-                                    $pedidoCompleto = $pedidoCompleto.",";
+                                    $pedidoCompleto = $pedidoCompleto.", ";
                                 }
                                 if($comaPromocion){
-                                    $pedidoCompleto = $pedidoCompleto.",";
+                                    $pedidoCompleto = $pedidoCompleto.", ";
                                 }
                                 $pedidoCompleto = $pedidoCompleto.$registroConsultaPromocion["NOMBREPROMOCION"]."(".$registroConsultaPromocion["CANTIDAD"].")";
                                 $comaPromocion = true;
@@ -572,10 +599,10 @@
                             $comaAgrupate = false;
                             while ($registroConsultaAgrupate = $resConsultaAgrupate->fetch_array(MYSQLI_BOTH)) {
                                 if(strlen($pedidoCompleto)!=0 && !$comaAgrupate){
-                                    $pedidoCompleto = $pedidoCompleto.",";
+                                    $pedidoCompleto = $pedidoCompleto.", ";
                                 }
                                 if($comaAgrupate){
-                                    $pedidoCompleto = $pedidoCompleto.",";
+                                    $pedidoCompleto = $pedidoCompleto.", ";
                                 }
                                 $pedidoCompleto = $pedidoCompleto.$registroConsultaAgrupate["NOMBREPROMOCION"]."(".$registroConsultaAgrupate["CANTIDAD"].")";
                                 $comaAgrupate = true;
@@ -712,11 +739,11 @@
 <script type="text/javascript">
 
     function detalle(){
-        var mimodal = crearModalTexto("Pedido N°: 1");
+        var mimodal = crearModalTexto();
         mostrarModal(mimodal);
     }
 
-    function crearModalTexto(msj) {
+    function crearModalTexto() {
 
         var f = document.createElement("div");
         var m = document.createElement("div");

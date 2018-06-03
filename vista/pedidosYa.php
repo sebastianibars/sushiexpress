@@ -43,24 +43,32 @@ if (isset($_GET["accion"])) {
         $conexion->query($actualizarCantidadPrecio);
                
         Header("Location: pedidosYa.php");
+    }else if (($_GET["accion"]) == 'borrarSeleccion') {
+        $borrarTablas="DELETE FROM btn_pedidosya_tmp";
+        $conexion->query($borrarTablas); 
+                     
+        Header("Location: pedidosYa.php");
     }
 }   
 
 
 ?>
 <script type="text/javascript">
-function agregarPedidosYa(idPedidosYa,precio){
-   window.location.href = "pedidosYa.php?accion=agregarPedido&id=" + idPedidosYa+"&precio="+precio;
-}
+    function agregarPedidosYa(idPedidosYa,precio){
+       window.location.href = "pedidosYa.php?accion=agregarPedido&id=" + idPedidosYa+"&precio="+precio;
+    }
 
-function guardarCantidadPrecioPedido(valor){
-    var idCantidadPrecio = valor.split("_");
-    var id=idCantidadPrecio[0];
-    var cantidad =idCantidadPrecio[1];
-    var precio=idCantidadPrecio[2];   
-    window.location.href = "pedidosYa.php?accion=guardarCantidadPrecio&id=" + id+"&cantidad="+cantidad+"&precio="+precio;
-}
- 
+    function guardarCantidadPrecioPedido(valor){
+        var idCantidadPrecio = valor.split("_");
+        var id=idCantidadPrecio[0];
+        var cantidad =idCantidadPrecio[1];
+        var precio=idCantidadPrecio[2];   
+        window.location.href = "pedidosYa.php?accion=guardarCantidadPrecio&id=" + id+"&cantidad="+cantidad+"&precio="+precio;
+    }
+    
+    function borrarSeleccion(){
+        window.location.href = "pedidosYa.php?accion=borrarSeleccion";
+    }
 
 </script>
 
@@ -218,7 +226,7 @@ function guardarCantidadPrecioPedido(valor){
                 <input type="button" value="Atras" style="width:120px;height:40px" onClick=" window.location.href = 'pedido.php'">
             </td>
             <td>
-                <input type="button" value="Borrar Todo" style="width:120px;height:40px">
+                <input type="button" value="Borrar Todo" style="width:120px;height:40px" onclick="borrarSeleccion()">
             </td>
         </tr>
     </table>

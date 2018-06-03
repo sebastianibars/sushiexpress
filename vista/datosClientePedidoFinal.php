@@ -16,6 +16,11 @@ $pisoDireccion=null;
 $departamentoDireccion=null;
 $zonaDireccion=null;
 $delivery=null;
+$precioDeliveryDefault = 0;
+$numeroClienteUnimev="";
+$numeroClienteDorrego="";
+$numeroClienteMaipu="";
+
 
 $consultaPrecio="SELECT FECHAENTREGA,PRECIOTOTAL FROM PEDIDOFINAL";
 $resConsultaPrecio = $conexion->query($consultaPrecio);     
@@ -27,6 +32,29 @@ $horaEntrega=substr($fechaEntrega, 11,-3);
 
 $consultaDelivery="SELECT ID,PRECIO FROM delivery";
 $resConsultaDelivery = $conexion->query($consultaDelivery); 
+
+/////////////////////////////////////////////////////////////////////////////////////
+
+$consultaNumeroClienteUnimev = "SELECT NUMERO FROM cliente where NUMERO like 'U%' order by id desc limit 1";
+$resConsultaNumeroCliente = $conexion->query($consultaNumeroClienteUnimev); 
+while ($resultConsultaNumeroCliente = $resConsultaNumeroCliente->fetch_array(MYSQLI_BOTH)) {
+    $numeroClienteUnimev=$resultConsultaNumeroCliente["NUMERO"];
+}
+/////////////////////////////////////////////////////////////////////////////////////
+$consultaNumeroClienteDorrego = "SELECT NUMERO FROM cliente where NUMERO like 'D%' order by id desc limit 1";
+$resConsultaNumeroCliente = $conexion->query($consultaNumeroClienteDorrego); 
+while ($resultConsultaNumeroCliente = $resConsultaNumeroCliente->fetch_array(MYSQLI_BOTH)) {
+    $numeroClienteDorrego=$resultConsultaNumeroCliente["NUMERO"];
+}
+///////////////////////////////////////////////////////////////////////////////////////////////
+$consultaNumeroClienteMaipu = "SELECT NUMERO FROM cliente where NUMERO like 'M%' order by id desc limit 1";
+$resConsultaNumeroCliente = $conexion->query($consultaNumeroClienteMaipu); 
+while ($resultConsultaNumeroCliente = $resConsultaNumeroCliente->fetch_array(MYSQLI_BOTH)) {
+    $numeroClienteMaipu=$resultConsultaNumeroCliente["NUMERO"];
+}
+
+
+
 
 if (isset($_GET["accion"])){
     if($_GET["accion"]=="buscar"){
@@ -147,6 +175,14 @@ if (isset($_GET["accion"])){
     function volverPaginaPadre(){
          window.parent.cambiarPagina();
     }
+    
+    function actualizarPrecioTotal(selectValue){
+        var idValueTotalSelect = selectValue.split("_");
+        var value = idValueTotalSelect[1];
+        var total = idValueTotalSelect[2];
+        var div = '<table width="100%" cellspacing="2px"><tr><td>Subtotal pedido</td><td>$'+total+'</td></tr><tr><td>Delivery</td><td>$'+value+'</td></tr><tr><td><b>TOTAL</b></td><td><b>$'+(parseInt(total)+parseInt(value))+'</b></td></tr></table>';
+        document.getElementById("divDelivery").innerHTML  = div;
+    }
 
     </script>
     
@@ -154,8 +190,38 @@ if (isset($_GET["accion"])){
     <body>
         <table width="100%">
             <tr>
-                <td ></td>
-                <td width="60%">
+                <td >
+                    <table border="2" cellspacing="0" style="background-color:rgb(255,255,255);" width="100%">
+                        <tr align="center">
+                            <td colspan="3" >
+                                NOMBRE ÚLTIMOS CLIENTES
+                            </td>
+                        </tr>
+                        <tr align="center">
+                            <td >
+                                UNIMEV
+                            </td>
+                            <td>
+                                DORREGO
+                            </td>
+                            <td>
+                                MAIPU
+                            </td>
+                        </tr>
+                        <tr align="center">
+                            <td>
+                                <?php echo $numeroClienteUnimev;?>
+                            </td>    
+                            <td>
+                                <?php echo $numeroClienteDorrego;?>
+                            </td>    
+                            <td>
+                                <?php echo $numeroClienteMaipu;?>
+                            </td>    
+                        </tr>
+                    </table>
+                </td>
+                <td width="60%" >
                     <table width="100%" cellspacing="10" >
                         <tr>
                             <td align="center" width="45%">
@@ -301,7 +367,7 @@ if (isset($_GET["accion"])){
                                 <td>
                                     <?php
                                     if($numCliente!=null){
-                                        echo '<input type="text" name="numeroCliente" value="'.$numCliente.'">';
+                                        echo '<input type="text" name="numeroCliente" value="'.$numCliente.'" disabled>';
                                     }else{
                                         echo '<input type="text" name="numeroCliente" value="">';
                                     }
@@ -323,7 +389,7 @@ if (isset($_GET["accion"])){
                                 <td>
                                     <?php
                                     if($numeroTelefono!=null){
-                                        echo '<input type="text" name="numeroTelefono" value="'.$numeroTelefono.'">';
+                                        echo '<input type="text" name="numeroTelefono" value="'.$numeroTelefono.'" disabled>';
                                     }else{
                                         echo '<input type="text" name="numeroTelefono" value="">';
                                     }
@@ -337,7 +403,7 @@ if (isset($_GET["accion"])){
                                 <td>
                                     <?php
                                     if($zonaDireccion!=null){
-                                        echo '<input type="text" name="zona" value="'.$zonaDireccion.'">';
+                                        echo '<input type="text" name="zona" value="'.$zonaDireccion.'" disabled>';
                                     }else{
                                         echo '<input type="text" name="zona" value="">';
                                     }
@@ -351,7 +417,7 @@ if (isset($_GET["accion"])){
                                 <td>
                                     <?php
                                     if($calleDireccion!=null){
-                                        echo '<input type="text" name="calle" value="'.$calleDireccion.'">';
+                                        echo '<input type="text" name="calle" value="'.$calleDireccion.'" disabled>';
                                     }else{
                                         echo '<input type="text" name="calle" value="">';
                                     }
@@ -365,7 +431,7 @@ if (isset($_GET["accion"])){
                                 <td>
                                     <?php
                                     if($numeracionDireccion!=null){
-                                        echo '<input type="text" name="numeracion" value="'.$numeracionDireccion.'">';
+                                        echo '<input type="text" name="numeracion" value="'.$numeracionDireccion.'" disabled>';
                                     }else{
                                         echo '<input type="text" name="numeracion" value="">';
                                     }
@@ -379,7 +445,7 @@ if (isset($_GET["accion"])){
                                 <td>
                                     <?php
                                     if($pisoDireccion!=null){
-                                        echo '<input type="text" name="piso" value="'.$pisoDireccion.'">';
+                                        echo '<input type="text" name="piso" value="'.$pisoDireccion.'" disabled>';
                                     }else{
                                         echo '<input type="text" name="piso" value="">';
                                     }
@@ -393,7 +459,7 @@ if (isset($_GET["accion"])){
                                 <td>
                                     <?php
                                     if($departamentoDireccion!=null){
-                                        echo '<input type="text" name="departamento" value="'.$departamentoDireccion.'">';
+                                        echo '<input type="text" name="departamento" value="'.$departamentoDireccion.'" disabled>';
                                     }else{
                                         echo '<input type="text" name="departamento" value="">';
                                     }
@@ -413,7 +479,7 @@ if (isset($_GET["accion"])){
                                     <b>Notas</b>
                                 </td>
                                 <td>
-                                   <textarea rows="5" cols="22" name="notas">
+                                   <textarea rows="2" cols="22" name="notas">
                                    </textarea>
                                 </td>
                             </tr>
@@ -423,14 +489,24 @@ if (isset($_GET["accion"])){
                                 </td>
                                 <td align="left" width="50%" >
                                     <?php
-                                    echo '<select style="width:70px;height:25px" name="delivery">';
+                                    if($delivery!=""){
+                                        echo '<select style="width:70px;height:25px" id="selectDelivery" name="selectDelivery" disabled onchange="actualizarPrecioTotal(this,value)">';
+                                    }else{
+                                        echo '<select style="width:70px;height:25px" id="selectDelivery" name="selectDelivery" onchange="actualizarPrecioTotal(this.value)">';
+                                    }
+                                        $deliveryDefault = true;
                                         while ($resultConsultaDelivery = $resConsultaDelivery->fetch_array(MYSQLI_BOTH)) {
+                                            if($deliveryDefault){
+                                                $precioDeliveryDefault = $resultConsultaDelivery["PRECIO"];
+                                                echo $precioDeliveryDefault;
+                                                $deliveryDefault = false;
+                                            }
                                             $idDelivery=$resultConsultaDelivery["ID"];
                                             $precioDelivery=$resultConsultaDelivery["PRECIO"];
                                             if($precioDelivery==$delivery){
-                                                echo '<option selected value="'.$idDelivery.'">$'.$precioDelivery.'</option>';
+                                                echo '<option selected value="'.$idDelivery.'_'.$precioDelivery.'_'.$precioTotal.'" >$'.$precioDelivery.'</option>';
                                             }else{
-                                                echo '<option value="'.$idDelivery.'">$'.$precioDelivery.'</option>';
+                                                echo '<option value="'.$idDelivery.'_'.$precioDelivery.'_'.$precioTotal.'" >$'.$precioDelivery.'</option>';
                                             }
                                         }
                                     echo '</select>';
@@ -440,10 +516,69 @@ if (isset($_GET["accion"])){
                         </table>
                         <table align="center">
                             <tr align="center">
-                                <td>
+                                <td>                                    
                                     <?php
-                                        echo '<b>Total: $'.$precioTotal,'</b>';
-                                    ?>
+                                        if($delivery != ""){
+                                            echo '<div id="divDelivery">
+                                                <table width="100%" cellspacing="2px">
+                                                    <tr>
+                                                        <td>
+                                                            Subtotal pedido
+                                                        </td>
+                                                        <td>
+                                                            $'.$precioTotal.'
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            Delivery
+                                                        </td>
+                                                        <td>
+                                                            $'.$delivery.'
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <b>TOTAL</b>
+                                                        </td>
+                                                        <td>
+                                                            <b>$'.($precioTotal+$delivery).'</b>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                </div>';
+                                        }else{    
+                                            echo '<div id="divDelivery">
+                                                <table width="100%" cellspacing="2px">
+                                                    <tr>
+                                                        <td>
+                                                            Subtotal pedido
+                                                        </td>
+                                                        <td>
+                                                            $'.$precioTotal.'
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            Delivery
+                                                        </td>
+                                                        <td>
+                                                            $'.$precioDeliveryDefault.'
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <b>TOTAL</b>
+                                                        </td>
+                                                        <td>
+                                                            <b>$'.($precioTotal+$precioDeliveryDefault).'</b>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                </div>';   
+                                        }
+                                            
+                                        ?>
                                 </td>
                             </tr>
                             <tr align="center">
@@ -457,10 +592,10 @@ if (isset($_GET["accion"])){
                         <table align="center">
                             <tr >
                                 <td>
-                                    <input type="submit" value="Finalizar pedido" style="width:140px;height:40px" onclick="volverPaginaPadre()" />
+                                    <input type="submit" value="Finalizar pedido" style="width:120px;height:30px" onclick="volverPaginaPadre()" />
                                 </td>
                                 <td>
-                                    <input type="button" value="Borrar" style="width:140px;height:40px" onClick="window.location.href = 'finalPedido.php'">
+                                    <input type="button" value="Borrar" style="width:120px;height:30px" onClick="window.location.href = 'finalPedidoDelivery.php'">
                                 </td>
                             </tr>
                         </table>

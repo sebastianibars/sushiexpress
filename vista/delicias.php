@@ -58,21 +58,30 @@
                 $conexion->query($actualizarCantidadPrecio);
                 
                 Header("Location: delicias.php");
-            }
+        }else if (($_GET["accion"]) == 'borrarSeleccion') {
+            $borrarTablas="DELETE FROM btn_delicia_tmp";
+            $conexion->query($borrarTablas); 
+                       
+            Header("Location: delicias.php");
+        }
     }
 ?>
 <script type="text/javascript">
-function guardarDelicia(id){
-    window.location.href = "delicias.php?accion=guardarDelicia&id=" + id;
-}
+    function guardarDelicia(id){
+        window.location.href = "delicias.php?accion=guardarDelicia&id=" + id;
+    }
 
-function guardarCantidadPrecioDeliciaCantidadFija(valor){
-    var idCantidadPrecio = valor.split("_");
-    var id=idCantidadPrecio[0];
-    var cantidad =idCantidadPrecio[1];
-    var precio=idCantidadPrecio[2];   
-    window.location.href = "delicias.php?accion=guardarCantidadPrecio&id=" + id+"&cantidad="+cantidad+"&precio="+precio;
-}
+    function guardarCantidadPrecioDeliciaCantidadFija(valor){
+        var idCantidadPrecio = valor.split("_");
+        var id=idCantidadPrecio[0];
+        var cantidad =idCantidadPrecio[1];
+        var precio=idCantidadPrecio[2];   
+        window.location.href = "delicias.php?accion=guardarCantidadPrecio&id=" + id+"&cantidad="+cantidad+"&precio="+precio;
+    }
+
+    function borrarSeleccion(){
+        window.location.href = "delicias.php?accion=borrarSeleccion";        
+    }
 </script>
 
 <html>
@@ -180,7 +189,7 @@ function guardarCantidadPrecioDeliciaCantidadFija(valor){
                                 <input type="button" value="Atras" style="width:120px;height:40px" onClick=" window.location.href = 'pedido.php'">
                             </td>
                             <td>
-                                <input type="button" value="Borrar Todo" style="width:120px;height:40px">
+                                <input type="button" value="Borrar Todo" style="width:120px;height:40px" onClick="borrarSeleccion()" />
                             </td>
                         </tr>
                     </table>

@@ -43,21 +43,31 @@
                 $conexion->query($actualizarCantidadPrecio);
                 
                 Header("Location: bebidas.php");
-            }
+        }else if (($_GET["accion"]) == 'borrarSeleccion') {
+            $borrarTablas="DELETE FROM btn_bebida_tmp";
+            $conexion->query($borrarTablas); 
+                       
+            Header("Location: bebidas.php");
+        }
     }
 ?>
 <script type="text/javascript">
-function guardarBebida(id){
-    window.location.href = "bebidas.php?accion=guardarBebida&id=" + id;
-}
+    function guardarBebida(id){
+        window.location.href = "bebidas.php?accion=guardarBebida&id=" + id;
+    }
 
-function guardarCantidadPrecioBebidaCantidadFija(valor){
-    var idCantidadPrecio = valor.split("_");
-    var id=idCantidadPrecio[0];
-    var cantidad =idCantidadPrecio[1];
-    var precio=idCantidadPrecio[2];   
-    window.location.href = "bebidas.php?accion=guardarCantidadPrecio&id=" + id+"&cantidad="+cantidad+"&precio="+precio;
-}
+    function guardarCantidadPrecioBebidaCantidadFija(valor){
+        var idCantidadPrecio = valor.split("_");
+        var id=idCantidadPrecio[0];
+        var cantidad =idCantidadPrecio[1];
+        var precio=idCantidadPrecio[2];   
+        window.location.href = "bebidas.php?accion=guardarCantidadPrecio&id=" + id+"&cantidad="+cantidad+"&precio="+precio;
+    }
+    
+    function borrarSeleccion(){
+        window.location.href = "bebidas.php?accion=borrarSeleccion";
+    }
+
 </script>
 
 <html>
@@ -152,7 +162,7 @@ function guardarCantidadPrecioBebidaCantidadFija(valor){
                                 <input type="button" value="Atras" style="width:120px;height:40px" onClick=" window.location.href = 'pedido.php'">
                             </td>
                             <td>
-                                <input type="button" value="Borrar Todo" style="width:120px;height:40px">
+                                <input type="button" value="Borrar Todo" style="width:120px;height:40px" onClick="borrarSeleccion()">
                             </td>
                         </tr>
                     </table>

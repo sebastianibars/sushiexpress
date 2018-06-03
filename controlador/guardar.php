@@ -448,16 +448,17 @@ if (isset($_POST["formulario"])) {
                                             CAMBIOLOCALID = 0
                                             where id=(select PEDIDOFINALID FROM pedidofinal_usuario_1)";
         $url = "../vista/inicio.php";
-   }else if ($_POST["formulario"] == "codigosAgrupate") {
-        $codigo1 = "";
-        $codigo2 = "";
-        if (isset($_POST["codigo1"])) {
-            $codigo1=$_POST["codigo1"];
-        }
-        if (isset($_POST["codigo2"])) {
-            $codigo2=$_POST["codigo2"];
-        }
    }
+   //else if ($_POST["formulario"] == "codigosAgrupate") {
+   //     $codigo1 = "";
+   //    $codigo2 = "";
+   //     if (isset($_POST["codigo1"])) {
+   //         $codigo1=$_POST["codigo1"];
+   //     }
+   //     if (isset($_POST["codigo2"])) {
+   //         $codigo2=$_POST["codigo2"];
+   //     }
+   //}
    
     $ejecutarQuery = $conexion->query($sqlGuardar);
     

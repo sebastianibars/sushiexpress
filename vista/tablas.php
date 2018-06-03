@@ -99,33 +99,18 @@ if (isset($_GET["accion"])) {
            
             Header("Location: tablas.php");
         }
+    }else if (($_GET["accion"]) == 'borrarSeleccion') {
+            $borrarTablas="DELETE FROM btn_cantidad_piezas_tmp_seleccion";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="DELETE FROM btn_variedad_tmp_seleccion";
+            $conexion->query($borrarTablas); 
+           
+            Header("Location: tablas.php");
     }
 }
 ?>
 <script type="text/javascript">
-    function crearModalTexto(msj) {
-        var f = document.createElement("div");
-        var m = document.createElement("div");
-        var t = document.createTextNode(msj);
-        f.appendChild(m);
-        m.appendChild(t);
-        f.className = "contenedor";
-        m.className = "modal";
-        var cerrar = document.createElement("div");
-        var x = document.createTextNode("X");
-        cerrar.appendChild(x);
-        cerrar.className = "cerrar";
-        cerrar.addEventListener("click", function () {
-            f.style.visibility = "hidden";
-        });
-        m.appendChild(cerrar);
-        document.body.appendChild(f);
-        return f;
-    }
-
-    function mostrarModal(obj) {
-        obj.style.visibility = "visible";
-    }
+    
 
     function guardarCantidadTabla(id) {
         window.location.href = "tablas.php?accion=guardarCantidadTabla&id=" + id;
@@ -133,7 +118,6 @@ if (isset($_GET["accion"])) {
 
     function gurdarCantidades(id) {
         var maximoCantidad = <?php echo $maximoTabla ?>;
-        var minimoCantidad = <?php echo $minimoTabla ?>;
         var precio = <?php echo $precioTabla ?>;
         var cantBtnVariedad =<?php echo $cantBtnVariedadTablas ?>;
         var cantTablas =<?php echo $botonCantidadId ?>;
@@ -173,6 +157,45 @@ if (isset($_GET["accion"])) {
         var id=idCantidadArray[0];
         var cantidad =idCantidadArray[1];
         window.location.href = "tablas.php?accion=guardarCantidadSelect&id=" + id+"&cantidad="+cantidad;
+    }
+    
+    function borrarSeleccion(){
+        window.location.href = "tablas.php?accion=borrarSeleccion";
+    }
+    
+    function validarMinimoPiezas(){
+        var minimoCantidad = <?php echo $minimoTabla ?>;
+        var cantBtnVariedad = <?php echo $cantBtnVariedadTablas ?>;
+        if(cantBtnVariedad < minimoCantidad){
+             var mimodal = crearModalTexto("SE DEBEN ELEGIR "+minimoCantidad+" O MAS VARIEDADES");
+             mostrarModal(mimodal);
+        }else{
+            window.location.href = "pedido.php";
+        }
+    }
+    
+    function crearModalTexto(msj) {
+        var f = document.createElement("div");
+        var m = document.createElement("div");
+        var t = document.createTextNode(msj);
+        f.appendChild(m);
+        m.appendChild(t);
+        f.className = "contenedor";
+        m.className = "modal";
+        var cerrar = document.createElement("div");
+        var x = document.createTextNode("X");
+        cerrar.appendChild(x);
+        cerrar.className = "cerrar";
+        cerrar.addEventListener("click", function () {
+            f.style.visibility = "hidden";
+        });
+        m.appendChild(cerrar);
+        document.body.appendChild(f);
+        return f;
+    }
+
+    function mostrarModal(obj) {
+        obj.style.visibility = "visible";
     }
 
 </script>
@@ -361,10 +384,10 @@ if (isset($_GET["accion"])) {
 <table width="100%" cellspacing="40">
     <tr align="center">
         <td>
-            <input type="button" value="Atras" style="width:120px;height:40px" onClick=" window.location.href = 'pedido.php'">
+            <input type="button" value="Atras" style="width:120px;height:40px" onClick="validarMinimoPiezas()">
         </td>
         <td>
-            <input type="button" value="Borrar Todo" style="width:120px;height:40px">
+            <input type="button" value="Borrar Todo" style="width:120px;height:40px" onClick="borrarSeleccion()" />
         </td>
     </tr>
 </table>
