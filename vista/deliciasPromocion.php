@@ -54,25 +54,34 @@
                 $precio=$_GET["precio"];
                 $cantidad=$_GET["cantidad"];
             }
-                $actualizarCantidadPrecio = "update btn_delicia_prom_tmp set CANTIDAD=$cantidad, precio=$precio where botonid=$id";
-                $conexion->query($actualizarCantidadPrecio);
+            $actualizarCantidadPrecio = "update btn_delicia_prom_tmp set CANTIDAD=$cantidad, precio=$precio where botonid=$id";
+            $conexion->query($actualizarCantidadPrecio);
                 
-                Header("Location: deliciasPromocion.php");
-            }
+            Header("Location: deliciasPromocion.php");
+        }else if (($_GET["accion"]) == 'borrarSeleccion') {
+            $borrarTablas="DELETE FROM btn_delicia_prom_tmp";
+            $conexion->query($borrarTablas); 
+                       
+            Header("Location: deliciasPromocion.php");
+        }
     }
 ?>
 <script type="text/javascript">
-function guardarDelicia(id){
-    window.location.href = "deliciasPromocion.php?accion=guardarDelicia&id=" + id;
-}
+    function guardarDelicia(id){
+        window.location.href = "deliciasPromocion.php?accion=guardarDelicia&id=" + id;
+    }
 
-function guardarCantidadPrecioDeliciaCantidadFija(valor){
-    var idCantidadPrecio = valor.split("_");
-    var id=idCantidadPrecio[0];
-    var cantidad =idCantidadPrecio[1];
-    var precio=idCantidadPrecio[2];   
-    window.location.href = "deliciasPromocion.php?accion=guardarCantidadPrecio&id=" + id+"&cantidad="+cantidad+"&precio="+precio;
-}
+    function guardarCantidadPrecioDeliciaCantidadFija(valor){
+        var idCantidadPrecio = valor.split("_");
+        var id=idCantidadPrecio[0];
+        var cantidad =idCantidadPrecio[1];
+        var precio=idCantidadPrecio[2];   
+        window.location.href = "deliciasPromocion.php?accion=guardarCantidadPrecio&id=" + id+"&cantidad="+cantidad+"&precio="+precio;
+    }
+
+    function borrarSeleccion(){
+        window.location.href = "deliciasPromocion.php?accion=borrarSeleccion";        
+    }
 </script>
 
 <html>
@@ -174,13 +183,10 @@ function guardarCantidadPrecioDeliciaCantidadFija(valor){
         <table width="100%" >
                         <tr align="center">
                             <td>
-                                <input type="button" value="Atras" style="width:120px;height:40px" onClick=" window.location.href = 'pedido.html'">
+                                <input type="button" value="Atras" style="width:120px;height:40px" onClick=" window.location.href = 'pedidoCombo.php'">
                             </td>
                             <td>
-                                <input type="button" value="Borrar Todo" style="width:120px;height:40px">
-                            </td>
-                            <td>
-                                <input type="button" value="Agregar" style="width:120px;height:40px" onClick=" window.location.href = 'pedido.html'">
+                                <input type="button" value="Borrar Todo" style="width:120px;height:40px" onClick="borrarSeleccion()">
                             </td>
                         </tr>
                     </table>

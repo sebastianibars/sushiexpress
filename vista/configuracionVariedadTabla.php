@@ -4,7 +4,7 @@
 
     $conexion = crearConexion();
 
-    $grupoVariedadTablas = "select * from grupotabla";
+    $grupoVariedadTablas = "select * from grupotabla where id != 1";
 
     $resGrupoVariedadTablas = $conexion->query($grupoVariedadTablas);
 
@@ -12,7 +12,8 @@
     $nombreGrupoVariedad = "";
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     $variedadTablas = "SELECT var.ID,var.NOMBRE,grupo.NOMBRE NOMBREGRUPOTABLA, var.MOSTRAR FROM variedadtabla var
-                        inner join grupotabla grupo on grupo.id = var.GRUPOTABLAID";
+                        inner join grupotabla grupo on grupo.id = var.GRUPOTABLAID
+                        where var.id not in (1,2,3)";
 
     $resVariedadTablas = $conexion->query($variedadTablas);
 
@@ -21,7 +22,7 @@
     $grupoTabla = "";
     $mostrar = "";
     //////////////////////////////////////////////////////////////////////////////////////////////
-    $grupoVariedadTablasSelect = "select * from grupotabla";
+    $grupoVariedadTablasSelect = "select * from grupotabla where id != 1";
 
     $resGrupoVariedadTablasSelect = $conexion->query($grupoVariedadTablasSelect);
 

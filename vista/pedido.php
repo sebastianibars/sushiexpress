@@ -12,6 +12,14 @@
         $existePedidoRetiro = 1;
     }
     
+    $consultarRetiraPedido="select * from BTN_RETIRO_PEDIDO";
+    $resRetiraPedido =  $conexion->query($consultarRetiraPedido); 
+    $cantFilas = $resRetiraPedido->num_rows;
+    if($cantFilas==0){
+        $guardarRetiroPedido="insert into BTN_RETIRO_PEDIDO (BOTONID) values (2)"; 
+        $conexion->query($guardarRetiroPedido); 
+    }
+    
     if (isset($_GET["accion"])) {
         if (($_GET["accion"]) == 'guardarPedidoFinal') {
             
@@ -48,7 +56,10 @@
     /////////////////////////////////////////////////////////////////////////////////////////////////
             $retiroPedido="SELECT BOTONID FROM btn_retiro_pedido";
             $resRetiroPedido =  $conexion->query($retiroPedido);
-           
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+            $agupateCodigo="SELECT CODIGO FROM AGRUPATE_CODIGO_TMP";
+            $resAgupateCodigo =  $conexion->query($agupateCodigo);
+            
             $consultaPrimerPedidoFinal = "SELECT ID FROM PEDIDOFINAL";
             $consultarPrimerPedidoFinal =  $conexion->query($consultaPrimerPedidoFinal); 
             $cantPedidoFinal = $consultarPrimerPedidoFinal->num_rows;
@@ -183,14 +194,22 @@
             while ($registroConsultaDemora = $resConsultaDemora->fetch_array(MYSQLI_BOTH)) {
                 $tiempoDemora=$registroConsultaDemora["DEMORAPEDIDO"];
             }
+            
+            while ($registroAgupateCodigo = $resAgupateCodigo->fetch_array(MYSQLI_BOTH)) {
+                $codigoAgrupate=$registroAgupateCodigo["CODIGO"];
+                
+                $consultaGuardar="insert into AGRUPATE_CODIGO (PEDIDOFINALID,CODIGO) values ($idPedidoFinal,$codigoAgrupate)";
+                $conexion->query($consultaGuardar); 
+            }        
 
             $diaEntrega=$_GET["dia"];
             $mesEntrega=$_GET["mes"];
             $añoEntrega=$_GET["año"];
             $horaEntrega=$_GET["hora"];
             $minutosEntrega=$_GET["minutos"];
-                       
-            $completarPedidoFinal="update pedidofinal set FECHAPEDIDO=NOW(),FECHAENTREGA=STR_TO_DATE('$añoEntrega-$mesEntrega-$diaEntrega $horaEntrega:$minutosEntrega:00','%Y-%m-%d %k:%i:00'),PRECIOTOTAL=$total where id=$idPedidoFinal";
+            $totalDescuento=$_GET["total"];
+
+            $completarPedidoFinal="update pedidofinal set FECHAPEDIDO=NOW(),FECHAENTREGA=STR_TO_DATE('$añoEntrega-$mesEntrega-$diaEntrega $horaEntrega:$minutosEntrega:00','%Y-%m-%d %k:%i:00'),PRECIOSUBTOTAL=$total, PRECIOTOTAL=$totalDescuento where id=$idPedidoFinal";
             $conexion->query($completarPedidoFinal); 
             
             $borrarTablas="delete from pedidofinal_usuario_1";
@@ -198,7 +217,7 @@
             
             $consultaGuardar="insert into PEDIDOFINAL_USUARIO_1 (PEDIDOFINALID) values ($idPedidoFinal)";
             $conexion->query($consultaGuardar); 
-                        
+                                   
             $borrarTablas="delete from btn_cantidad_piezas_tmp";
             $conexion->query($borrarTablas); 
             $borrarTablas="delete from btn_delicia_tmp";
@@ -460,7 +479,37 @@
              var añoEntrega=document.getElementById("añoEntrega").value;
              var horaEntrega=document.getElementById("horaEntrega").value;
              var minutoEntrega=document.getElementById("minutoEntrega").value;
-             window.location.href = "pedido.php?accion=guardarPedidoFinal&dia="+diaEntrega+"&mes="+mesEntrega+"&año="+añoEntrega+"&hora="+horaEntrega+"&minutos="+minutoEntrega;
+             var descuento = '';
+             if(document.getElementById("valueDescuento") != null){
+                 descuento = document.getElementById("valueDescuento").value;
+             }
+             var tipoDescuento = document.getElementById("tipoDescuentoId").value;
+             var subTotal = document.getElementById("totalId").value;
+             var total;
+             
+             if(descuento != ''){
+                if(tipoDescuento ==1){
+                    total = parseFloat(subTotal) - parseFloat(descuento);
+                    if(total < 0){
+                        total=0;
+                    }            
+                }
+        
+                if(tipoDescuento==2){
+                    if(descuento<10){
+                        descuento = '0.0'+descuento;   
+                    }else if(numero < 100){
+                        descuento = '0.'+descuento;      
+                    }else{
+                        descuento = '1';
+                    }
+                    total = parseFloat(subTotal) - (parseFloat(subTotal)*parseFloat(descuento));
+                }
+            }else{
+                total = subTotal;
+            }
+    
+            window.location.href = "pedido.php?accion=guardarPedidoFinal&dia="+diaEntrega+"&mes="+mesEntrega+"&año="+añoEntrega+"&hora="+horaEntrega+"&minutos="+minutoEntrega+"&total="+total;
          }else{
             var mimodal = crearModalTexto("DEBE SELECCIONAR TIPO DE RETIRO DEL PEDIDO");
             mostrarModal(mimodal);
@@ -539,18 +588,15 @@
                 simbolo='%';
                 tipoDescuento='2';
             }
-            div = '<table align="center" valign="center"><tr ><td align="right"><b>subtotal:</b></td><td align="center"><b>$'+total+'</b></td></tr><tr><td align="right"><b>-</b></td><td align="center" style="border-bottom: 2px solid;width:100px;"><b>'+simbolo+'</b><input type="text" size="2px" onkeyup="calcularDescuento('+tipoDescuento+',event,'+total+')" id="valueDescuento"></td></tr><tr style="font-size: 23px;"><td align="right"><b>Total:</b></td><td align="center"><div id="divSumaTotal"><b>$'+total+'</b></div></td></tr></table>';
+            div = '<input type="hidden" id="totalId" value="'+total+'"/><input type="hidden" id="tipoDescuentoId" value="'+id+'"/><table align="center" valign="center"><tr ><td align="right"><b>subtotal:</b></td><td align="center"><b>$'+total+'</b></td></tr><tr><td align="right"><b>-</b></td><td align="center" style="border-bottom: 2px solid;width:100px;"><b>'+simbolo+'</b><input type="text" size="2px" onkeyup="calcularDescuento('+tipoDescuento+','+total+')" id="valueDescuento"></td></tr><tr style="font-size: 23px;"><td align="right"><b>Total:</b></td><td align="center"><div id="divSumaTotal"><b>$'+total+'</b></div></td></tr></table>';
         }else if(id==1){
-            div = '<table align="center" valign="center"><tr style="font-size: 23px;"><td align="right"><b>Total:</b></td><td align="center"><b>$'+total+'</b></td></tr></table>';
+            div = '<input type="hidden" id="totalId" value="'+total+'"/><input type="hidden" id="tipoDescuentoId" value="'+id+'"/><table align="center" valign="center"><tr style="font-size: 23px;"><td align="right"><b>Total:</b></td><td align="center"><b>$'+total+'</b></td></tr></table>';
         }
        
 	document.getElementById("divTotal").innerHTML  = div;
     }
     
-    function calcularDescuento(tipoDescuento,value,subTotal){
-        keycode = (value.keyCode==0) ? value.which : value.keyCode;
-        //console.log(keycode);
-  
+    function calcularDescuento(tipoDescuento,subTotal){
         var numero = '';
         var total;
         if(document.getElementById("valueDescuento").value != ""){
@@ -558,14 +604,11 @@
         }
         
         if(numero != ''){
-        console.log(numero);
-       // numero = numero + value.key;
             if(tipoDescuento ==1){
                 total = parseFloat(subTotal) - parseFloat(numero);
                 if(total < 0){
                     total=0;
-                }
-            
+                }            
             }
         
             if(tipoDescuento==2){
@@ -839,11 +882,18 @@
                                 $total=$total+$registroPromocion["PRECIO"];
                         } 
                         echo '</table>
-                            <select style="margin-left:200px;margin-top:20px" onchange="cargarTotal(this.value)">
-                            <option value="1_'.$total.'">Sin descuento</option>
-                            <option value="2_'.$total.'">Descuento porcentaje</option>
-                            <option value="3_'.$total.'">Descuento valor</option>
-                        </select>
+                            <table width="66%">
+                                <tr>
+                                <td align="center" >
+                            <select onchange="cargarTotal(this.value)">
+                                <option value="1_'.$total.'">Sin descuento</option>
+                                <option value="2_'.$total.'">Descuento porcentaje</option>
+                                <option value="3_'.$total.'">Descuento valor</option>
+                            </select>
+                            </td>
+                            <td align="center">
+                        <input type="hidden" id="totalId" value="'.$total.'"/>
+                        <input type="hidden" id="tipoDescuentoId" value="1"/>
                         <div id="divTotal">
                             <table align="center" valign="center">                                 
                                 <tr style="font-size: 23px;">
@@ -855,7 +905,10 @@
                                     </td>
                                 </tr>                                
                             </table>
-                         </div>';
+                         </div>
+                         </td>
+                         </tr>
+                         </table>';
                     ?>
 
                  

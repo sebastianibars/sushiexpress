@@ -2,6 +2,15 @@
 include ("../conexion/conexion.php");
 $conexion = crearConexion();
 
+$minimoPiezas = "select * from minimopiezas";
+$resMinimoPiezas = $conexion->query($minimoPiezas);
+
+$minimoPiezas = 5;
+
+while ($registroMinimoPiezas = $resMinimoPiezas->fetch_array(MYSQLI_BOTH)) {
+    $minimoPiezas = $registroMinimoPiezas["PIEZAS"];
+}
+//////////////////////////////////////////////////////////
 $tablasPromocion = "select * from tabla where mostrar=true";
 
 $resTablas = $conexion->query($tablasPromocion);
@@ -62,8 +71,14 @@ if (isset($_GET["accion"])) {
             $borrarDatosTablaTemporal = "delete from BTN_CANTIDAD_PIEZAS_PROM_TMP";
             $conexion->query($borrarDatosTablaTemporal);
             $idBoton = $_GET["id"];
+            
+            $cantBtnCantPiezas ="SELECT IF(MAX(ID) is null,1,MAX(ID)+1)ID FROM btn_cantidad_piezas_prom_tmp";
+            $resCantBtnCantPiezas =  $conexion->query($cantBtnCantPiezas);         
+            while ($registroCantBtnCantPiezas = $resCantBtnCantPiezas->fetch_array(MYSQLI_BOTH)) {
+                $btnCantId=$registroCantBtnCantPiezas["ID"];
+            }                
 
-            $guardarDatosTablaTemporal = "insert into BTN_CANTIDAD_PIEZAS_PROM_TMP (botonid) value ($idBoton)";
+            $guardarDatosTablaTemporal = "insert into BTN_CANTIDAD_PIEZAS_PROM_TMP (id,botonid) value ($btnCantId,$idBoton)";
             $conexion->query($guardarDatosTablaTemporal);
 
             $borrarDatosTablaTemporalVariedad = "delete from BTN_VARIEDAD_PROM_TMP";
@@ -78,13 +93,19 @@ if (isset($_GET["accion"])) {
             $cantBtnVariedad = "select * from BTN_VARIEDAD_PROM_TMP where BOTONID = $idBoton";
             $resCantBtnVariedad = $conexion->query($cantBtnVariedad);
             $resultCantBtnVariedad = $resCantBtnVariedad->num_rows;
+            
+            $cantBtnCantPiezas ="SELECT MAX(ID)ID FROM btn_cantidad_piezas_prom_tmp";
+            $resCantBtnCantPiezas =  $conexion->query($cantBtnCantPiezas);         
+            while ($registroCantBtnCantPiezas = $resCantBtnCantPiezas->fetch_array(MYSQLI_BOTH)) {
+                $btnCantId=$registroCantBtnCantPiezas["ID"];
+            }        
 
             if ($resultCantBtnVariedad > 0) {
                 $borrarDatosTablaTemporal = "delete from BTN_VARIEDAD_PROM_TMP where BOTONID = $idBoton";
                 $conexion->query($borrarDatosTablaTemporal);
                 
             } else {
-                $guardarDatosTablaTemporal = "insert into BTN_VARIEDAD_PROM_TMP (BOTONID,CANTIDAD,TABLAID) value ($idBoton,0,$cantTabla)";
+                $guardarDatosTablaTemporal = "insert into BTN_VARIEDAD_PROM_TMP (ID,BOTONID,CANTIDAD,TABLAID) value ($btnCantId,$idBoton,0,$cantTabla)";
                 $conexion->query($guardarDatosTablaTemporal);
             }
             Header("Location: tablasPromocion.php");
@@ -99,6 +120,13 @@ if (isset($_GET["accion"])) {
            
             Header("Location: tablasPromocion.php");
         }
+    }else if (($_GET["accion"]) == 'borrarSeleccion') {
+                $borrarTablas="DELETE FROM btn_cantidad_piezas_prom_tmp";
+            $conexion->query($borrarTablas); 
+            $borrarTablas="DELETE FROM BTN_VARIEDAD_PROM_TMP";
+            $conexion->query($borrarTablas); 
+           
+            Header("Location: tablasPromocion.php");
     }
 }
 ?>
@@ -173,6 +201,29 @@ if (isset($_GET["accion"])) {
         var id=idCantidadArray[0];
         var cantidad =idCantidadArray[1];
         window.location.href = "tablasPromocion.php?accion=guardarCantidadSelect&id=" + id+"&cantidad="+cantidad;
+    }
+    
+    function borrarSeleccion(){
+        window.location.href = "tablasPromocion.php?accion=borrarSeleccion";
+    }
+    
+    function validarMinimoPiezas(){
+        var minimoCantidad = <?php echo $minimoTabla ?>;
+        var cantBtnVariedad = <?php echo $cantBtnVariedadTablas ?>;
+        var arrayBtnVariedad = <?php echo json_encode($arrayBtnVariedad) ?>;
+        var contarCantidad = true;
+        
+        for (var i = 0; i < arrayBtnVariedad.length; i++){
+            if(arrayBtnVariedad[i] == 1 || arrayBtnVariedad[i] == 2 || arrayBtnVariedad[i] == 3)
+            contarCantidad = false;
+        }
+
+        if((cantBtnVariedad < minimoCantidad) && contarCantidad){
+             var mimodal = crearModalTexto("SE DEBEN ELEGIR "+minimoCantidad+" O MAS VARIEDADES");
+             mostrarModal(mimodal);
+        }else{
+            window.location.href = "pedidoCombo.php";
+        }
     }
 
 </script>
@@ -296,21 +347,21 @@ if (isset($_GET["accion"])) {
                             }
                             echo ' value="'.$registroVariedadesLista["BOTONID"].'_0">-</option>
                                     <option';
-                            if ($registroVariedadesLista["CANTIDAD"] == 5) {
+                            if ($registroVariedadesLista["CANTIDAD"] == $minimoPiezas) {
                                 echo ' selected';
                               
                             }
-                            echo ' value="'.$registroVariedadesLista["BOTONID"].'_5">5</option>
+                            echo ' value="'.$registroVariedadesLista["BOTONID"].'_'.$minimoPiezas.'">'.$minimoPiezas.'</option>
                                         <option';
-                            if ($registroVariedadesLista["CANTIDAD"] == 10) {
+                            if ($registroVariedadesLista["CANTIDAD"] == ($minimoPiezas*2)) {
                                 echo ' selected';
                             }
-                            echo ' value="'.$registroVariedadesLista["BOTONID"].'_10">10</option>
+                            echo ' value="'.$registroVariedadesLista["BOTONID"].'_'.($minimoPiezas*2).'">'.($minimoPiezas*2).'</option>
                                         <option';
-                            if ($registroVariedadesLista["CANTIDAD"] == 15) {
+                            if ($registroVariedadesLista["CANTIDAD"] == ($minimoPiezas*3)) {
                                 echo ' selected';
                             }
-                            echo ' value="'.$registroVariedadesLista["BOTONID"].'_15">15</option>
+                            echo ' value="'.$registroVariedadesLista["BOTONID"].'_'.($minimoPiezas*3).'">'.($minimoPiezas*3).'</option>
                                     </select>
                                 </td>
                                 </tr>';
@@ -361,13 +412,10 @@ if (isset($_GET["accion"])) {
 <table width="100%" cellspacing="40">
     <tr align="center">
         <td>
-            <input type="button" value="Atras" style="width:120px;height:40px" onClick=" window.location.href = 'pedido.html'">
+            <input type="button" value="Atras" style="width:120px;height:40px" onClick="validarMinimoPiezas()">
         </td>
         <td>
-            <input type="button" value="Borrar Todo" style="width:120px;height:40px">
-        </td>
-        <td>
-            <input type="button" value="Agregar" style="width:120px;height:40px" onClick=" window.location.href = 'pedido.html'">
+            <input type="button" value="Borrar Todo" style="width:120px;height:40px" onClick="borrarSeleccion()">
         </td>
     </tr>
 </table>

@@ -13,10 +13,13 @@
     $minimo = "";
     $precio = "";
     $mostrar = "";
-
-    $minimoPiezas = "select * from minimopiezas";
-
-    $resPiezas = $conexion->query($minimoPiezas);
+///////////////////////////////////////////////////////
+    $consultaMinimoPiezas = "select * from minimopiezas";
+    $resPiezas = $conexion->query($consultaMinimoPiezas);
+    $minimoPiezas="";
+    while ($regitroPiezas = $resPiezas->fetch_array(MYSQLI_BOTH)) {
+        $minimoPiezas = $regitroPiezas['PIEZAS'];
+    }
 
     if (isset($_GET["accion"])) {
         if (($_GET["accion"]) == 'editar') {
@@ -168,37 +171,18 @@
                 </tr>
             </table>
         </form>    
-        <table cellspacing="40">
-            <tr>
-                <td></td>
-            </tr>
-        </table>
         <table width="60%" align="center">
             <tr >
-                <td width="50%">
-                    <table cellspacing="0" border="2" align="center" style="background-color:rgb(255,255,255);">
-                        <tr>
-                            <td>
-                                <b>Minimo de piezas por variedad</b>
-                            </td>
-                        </tr>
-                        <tr align="center">
-                            <?php
-                            while ($regitroPiezas = $resPiezas->fetch_array(MYSQLI_BOTH)) {
-                                echo '<tr align="center">
-                      <td>' . $regitroPiezas['PIEZAS'] . '</td>';
-                            }
-                            ?>
-                        </tr>
-                    </table>
-                </td>
                 <td  width="50%">
                     <form method="POST" action="../controlador/guardar.php">
-                    <table align="center">
+                    <table align="center" cellspacing="20px"> 
                         <input type="hidden" name="formulario" value="cantidadPiezas">
-                        <tr>
+                        <tr >
                             <td>
-                                Minimo de piezas por variedad <input type="text" name="minimoPiezas" >
+                                Minimo de piezas por variedad 
+                            </td>
+                            <td>
+                                <input type="text" size="1" name="minimoPiezas"  value="<?php echo $minimoPiezas;?>">
                             </td>
                         </tr>
                     </table>
@@ -206,11 +190,6 @@
                 </td>
             </tr>
         </table>
-        <table cellspacing="40">
-            <tr>
-                <td></td>
-            </tr>
-        </table>    
         <table align="center" width="80%">
             <tr>
                 <td align="center">

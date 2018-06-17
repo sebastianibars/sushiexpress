@@ -16,7 +16,7 @@
                     <input type="button" value="Delicias" style="width:160px;height:60px" onClick=" window.location.href = 'configuracionDelicia.php'">
                 </td>
                    <td>
-                    <input type="button" value="Cantidad delicias" style="width:160px;height:60px" onClick=" window.location.href = 'configuracionCantidadDelicia.php'">
+                    <input type="button" value="Cantidad delicias" style="width:160px;height:60px" onClick=" window.location.href = 'configuracionCantidadDelicia.php?accion=cargar&id=0'">
                 </td>
             </tr>
             <tr align="center">
@@ -36,8 +36,6 @@
                     <input type="button" value="Agrupate" style="width:160px;height:60px" onClick=" window.location.href = 'agrupatePromociones.php'">
                 </td>
             </tr>
-        </table>
-        <table  width="80%" align="center"  cellspacing="0" >
             <tr align="center">
                 <td>
                     <input type="button" value="Promociones" style="width:160px;height:60px" onClick=" window.location.href = 'configuracionPromociones.html'">
@@ -47,6 +45,9 @@
                 </td>
                 <td >
                     <input type="button" value="Delivery" style="width:160px;height:60px" onClick=" window.location.href = 'configuracionDelivery.html'">
+                </td>
+                <td >
+                    <input type="button" value="Tiempos" style="width:160px;height:60px" onClick=" window.location.href = 'cliente.html'">
                 </td>
             </tr>
 

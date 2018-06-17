@@ -43,21 +43,30 @@
             $conexion->query($actualizarCantidadPrecio);
                 
             Header("Location: adicionalesPromocion.php");
+        }else if (($_GET["accion"]) == 'borrarSeleccion') {
+            $borrarTablas="DELETE FROM btn_adicional_prom_tmp";
+            $conexion->query($borrarTablas); 
+                       
+            Header("Location: adicionalesPromocion.php");
         }
     }
 ?>
 <script type="text/javascript">
-function guardarAdicional(id){
-    window.location.href = "adicionalesPromocion.php?accion=guardarAdicional&id=" + id;
-}
+    function guardarAdicional(id){
+        window.location.href = "adicionalesPromocion.php?accion=guardarAdicional&id=" + id;
+    }
 
-function guardarCantidadPrecioAdicionalCantidadFija(valor){
-    var idCantidadPrecio = valor.split("_");
-    var id=idCantidadPrecio[0];
-    var cantidad =idCantidadPrecio[1];
-    var precio=idCantidadPrecio[2];   
-    window.location.href = "adicionalesPromocion.php?accion=guardarCantidadPrecio&id=" + id+"&cantidad="+cantidad+"&precio="+precio;
-}
+    function guardarCantidadPrecioAdicionalCantidadFija(valor){
+        var idCantidadPrecio = valor.split("_");
+        var id=idCantidadPrecio[0];
+        var cantidad =idCantidadPrecio[1];
+        var precio=idCantidadPrecio[2];   
+        window.location.href = "adicionalesPromocion.php?accion=guardarCantidadPrecio&id=" + id+"&cantidad="+cantidad+"&precio="+precio;
+    }
+
+    function borrarSeleccion(){
+        window.location.href = "adicionalesPromocion.php?accion=borrarSeleccion";
+    }
 </script>
 
 <html>
@@ -149,13 +158,10 @@ function guardarCantidadPrecioAdicionalCantidadFija(valor){
         <table width="100%" >
                         <tr align="center">
                             <td>
-                                <input type="button" value="Atras" style="width:120px;height:40px" onClick=" window.location.href = 'pedido.html'">
+                                <input type="button" value="Atras" style="width:120px;height:40px" onClick=" window.location.href = 'pedidoCombo.php'">
                             </td>
                             <td>
-                                <input type="button" value="Borrar Todo" style="width:120px;height:40px">
-                            </td>
-                            <td>
-                                <input type="button" value="Agregar" style="width:120px;height:40px" onClick=" window.location.href = 'pedido.html'">
+                                <input type="button" value="Borrar Todo" style="width:120px;height:40px" onClick="borrarSeleccion()">
                             </td>
                         </tr>
                     </table>

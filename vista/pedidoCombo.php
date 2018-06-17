@@ -7,15 +7,15 @@
               inner join tabla on tabla.id = btn_cantidad_piezas_prom_tmp.BOTONID";
     $resTablas =  $conexion->query($tablas);    
     /////////////////////////////////////////////////////////////////////////////////////
-    $delicias ="SELECT delicia.NOMBRE,btn_delicia_prom_tmp.CANTIDAD,btn_delicia_prom_tmp.PRECIO FROM btn_delicia_prom_tmp
+    $delicias ="SELECT btn_delicia_prom_tmp.BOTONID,delicia.NOMBRE,btn_delicia_prom_tmp.CANTIDAD,btn_delicia_prom_tmp.PRECIO FROM btn_delicia_prom_tmp
                 inner join delicia on delicia.id = btn_delicia_prom_tmp.BOTONID";
     $resDelicias =  $conexion->query($delicias);
     ////////////////////////////////////////////////////////////////////////////////////////////
-    $bebidas ="SELECT bebida.NOMBRE,btn_bebida_prom_tmp.CANTIDAD,btn_bebida_prom_tmp.PRECIO FROM btn_bebida_prom_tmp
+    $bebidas ="SELECT btn_bebida_prom_tmp.BOTONID,bebida.NOMBRE,btn_bebida_prom_tmp.CANTIDAD,btn_bebida_prom_tmp.PRECIO FROM btn_bebida_prom_tmp
                inner join bebida on bebida.id = btn_bebida_prom_tmp.BOTONID";
     $resBebidas =  $conexion->query($bebidas);
     //////////////////////////////////////////////////////////////////////////////////////////
-    $adicional="SELECT adicional.NOMBRE,btn_adicional_prom_tmp.CANTIDAD,btn_adicional_prom_tmp.PRECIO FROM btn_adicional_prom_tmp
+    $adicional="SELECT btn_adicional_prom_tmp.BOTONID,adicional.NOMBRE,btn_adicional_prom_tmp.CANTIDAD,btn_adicional_prom_tmp.PRECIO FROM btn_adicional_prom_tmp
                 inner join adicional on adicional.id = btn_adicional_prom_tmp.BOTONID";
     $resAdicional =  $conexion->query($adicional);
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -95,7 +95,44 @@
                 
                 Header("Location: combo.php");
             }
-        }
+        }if (($_GET["accion"]) == 'eliminarPedido') {
+        
+            $borrarTablaTmp="delete from btn_adicional_prom_tmp";
+            $conexion->query($borrarTablaTmp);
+            $borrarTablaTmp="delete from btn_cantidad_piezas_prom_tmp";
+            $conexion->query($borrarTablaTmp);
+            $borrarTablaTmp="delete from btn_variedad_prom_tmp";
+            $conexion->query($borrarTablaTmp);
+            $borrarTablaTmp="delete from btn_delicia_prom_tmp";
+            $conexion->query($borrarTablaTmp);
+            $borrarTablaTmp="delete from btn_bebida_prom_tmp";
+            $conexion->query($borrarTablaTmp);
+
+            Header("Location: pedidoCombo.php");
+        }else if (($_GET["accion"]) == 'eliminarTabla') {
+            $id = ($_GET["id"]);
+            $borrarTablas="delete from btn_cantidad_piezas_prom_tmp where id = $id";
+            $conexion->query($borrarTablas);
+            $borrarTablas="delete from btn_variedad_prom_tmp where id = $id";
+            $conexion->query($borrarTablas); 
+            Header("Location: pedidoCombo.php"); 
+         }else if (($_GET["accion"]) == 'eliminarDelicia') {
+            $id = ($_GET["id"]);
+            $borrarTablas="delete from btn_delicia_prom_tmp where botonid = $id";
+            $conexion->query($borrarTablas);
+            Header("Location: pedidoCombo.php"); 
+         }else if (($_GET["accion"]) == 'eliminarBebida') {
+            $id = ($_GET["id"]);
+            $borrarTablas="delete from btn_bebida_prom_tmp where botonid = $id";
+            $conexion->query($borrarTablas);
+            Header("Location: pedidoCombo.php"); 
+         }else if (($_GET["accion"]) == 'eliminarAdicional') {
+            $id = ($_GET["id"]);
+            $borrarTablas="delete from btn_adicional_prom_tmp where botonid = $id";
+            $conexion->query($borrarTablas);
+            Header("Location: pedidoCombo.php"); 
+         }
+        
      }
     ?>
     <script type="text/javascript">
@@ -104,6 +141,26 @@
             var nombre=splitNombreTotal[0];
             var total =splitNombreTotal[1];
             window.location.href = "pedidoCombo.php?accion=guardarComboPedido&nombre="+nombre+"&total="+total;
+        }
+        
+        function eliminarPedido(){
+            window.location.href = "pedidoCombo.php?accion=eliminarPedido";
+        }
+        
+        function eliminarTabla(tablaId){
+            window.location.href = "pedidoCombo.php?accion=eliminarTabla&id=" + tablaId;
+        }
+        
+        function eliminarDelicia(deliciaId){
+            window.location.href = "pedidoCombo.php?accion=eliminarDelicia&id=" + deliciaId;
+        }
+    
+        function eliminarBebida(bebidaId){
+            window.location.href = "pedidoCombo.php?accion=eliminarBebida&id=" + bebidaId;
+        }
+
+        function eliminarAdicional(adicionalId){
+            window.location.href = "pedidoCombo.php?accion=eliminarAdicional&id=" + adicionalId;
         }
     </script>
 <div align="center"><h1>Preparar pedidos para combo</h1></div>
@@ -149,12 +206,15 @@
                             <td align="center">
                                 <b>Precio</b>
                             </td>
+                            <td>
+                                
+                            </td>
                         </tr>
                     <?php
                     $total=0;
                         while ($registroTablas = $resTablas->fetch_array(MYSQLI_BOTH)) {
                             echo '<tr align="center"><td>'.$registroTablas["CANTIDADPIEZAS"].' PIEZAS</td>';  
-                            $variedadTabla ="SELECT variedadtabla.NOMBRE,btn_variedad_prom_tmp.CANTIDAD FROM btn_variedad_prom_tmp
+                            $variedadTabla ="SELECT btn_variedad_prom_tmp.ID,variedadtabla.NOMBRE,btn_variedad_prom_tmp.CANTIDAD FROM btn_variedad_prom_tmp
                                             inner join variedadtabla on variedadtabla.ID = btn_variedad_prom_tmp.BOTONID
                                             where TABLAID =".$registroTablas["ID"];
                             $resVariedadTabla = $conexion->query($variedadTabla);
@@ -171,6 +231,7 @@
                             $j=0;
                             $resVariedadTabla = $conexion->query($variedadTabla);
                             while ($registroVariedadTabla = $resVariedadTabla->fetch_array(MYSQLI_BOTH)) {
+                                $idTablaEliminar = $registroVariedadTabla["ID"];
                                 $j++;
                                 if($j!=1){
                                     echo '<br>';
@@ -181,28 +242,43 @@
                                     echo $registroVariedadTabla["CANTIDAD"];
                                 }
                             }
-                            echo '</td><td>$'.$registroTablas["PRECIO"].'</td></tr>';
+                            echo '</td><td>$'.$registroTablas["PRECIO"].'</td>';
+                             echo '<td align="center" style="width:60px;">';
+                                echo '<input type="button" value="Eiminar" style="width:60px;height:25px;" onClick="eliminarTabla('.$idTablaEliminar.')">';
+                            echo '</td></tr>'; 
                             $total=$total+$registroTablas["PRECIO"];
                         }
                         while ($registroDelicias = $resDelicias->fetch_array(MYSQLI_BOTH)) {
                             echo '<tr align="center"><td>'.$registroDelicias["NOMBRE"].'</td>
                                  <td>-</td>
                                  <td>'.$registroDelicias["CANTIDAD"].'</td>
-                                 <td>$'.$registroDelicias["PRECIO"].'</td></tr>';
+                                 <td>$'.$registroDelicias["PRECIO"].'</td>
+                                 <td align="center" style="width:60px;">
+                                       <input type="button" value="Eiminar" style="width:60px;height:25px;" onClick="eliminarDelicia('.$registroDelicias["BOTONID"].')">
+                                    </td>
+                                 </tr>';
                                 $total=$total+$registroDelicias["PRECIO"];
                         }
                         while ($registroBebidas = $resBebidas->fetch_array(MYSQLI_BOTH)) {
                             echo '<tr align="center"><td>'.$registroBebidas["NOMBRE"].'</td>
                                  <td>-</td>
                                  <td>'.$registroBebidas["CANTIDAD"].'</td>
-                                 <td>$'.$registroBebidas["PRECIO"].'</td></tr>';
+                                 <td>$'.$registroBebidas["PRECIO"].'</td>
+                                 <td align="center" style="width:60px;">
+                                    <input type="button" value="Eiminar" style="width:60px;height:25px;" onClick="eliminarBebida('.$registroBebidas["BOTONID"].')">
+                                 </td>
+                                 </tr>';
                                 $total=$total+$registroBebidas["PRECIO"];
                         } 
                         while ($registroAdicional = $resAdicional->fetch_array(MYSQLI_BOTH)) {
                             echo '<tr align="center"><td>'.$registroAdicional["NOMBRE"].'</td>
                                  <td>-</td>
                                  <td>'.$registroAdicional["CANTIDAD"].'</td>
-                                 <td>$'.$registroAdicional["PRECIO"].'</td></tr>';
+                                 <td>$'.$registroAdicional["PRECIO"].'</td>
+                                 <td align="center" style="width:60px;">
+                                    <input type="button" value="Eiminar" style="width:60px;height:25px;" onClick="eliminarAdicional('.$registroAdicional["BOTONID"].')">
+                                 </td>
+                                 </tr>';
                                 $total=$total+$registroAdicional["PRECIO"];
                         } 
                         echo '</table>
@@ -232,7 +308,7 @@
                     <input type="button" value="Atras" style="width:120px;height:40px" onClick=" window.location.href = 'combo.php'">
                 </td>
                 <td>
-                    <input type="button" value="Eliminar pedido" style="width:120px;height:40px" onClick=" window.location.href = 'pedidoCombo.php'">
+                    <input type="button" value="Eliminar pedido" style="width:120px;height:40px" onClick="eliminarPedido()">
                 </td>
                 <td>
                     <input type="button" value="Guardar" style="width:120px;height:40px" onClick="guardarPedido(document.getElementById('idPedido').value+'_'+document.getElementById('idTotal').value)">

@@ -2,6 +2,16 @@
 include ("../conexion/conexion.php");
 $conexion = crearConexion();
 
+$minimoPiezas = "select * from minimopiezas";
+$resMinimoPiezas = $conexion->query($minimoPiezas);
+
+$minimoPiezas = 5;
+
+while ($registroMinimoPiezas = $resMinimoPiezas->fetch_array(MYSQLI_BOTH)) {
+    $minimoPiezas = $registroMinimoPiezas["PIEZAS"];
+}
+//////////////////////////////////////////////////////////
+
 $tablas = "select * from tabla";
 
 $resTablas = $conexion->query($tablas);
@@ -166,7 +176,15 @@ if (isset($_GET["accion"])) {
     function validarMinimoPiezas(){
         var minimoCantidad = <?php echo $minimoTabla ?>;
         var cantBtnVariedad = <?php echo $cantBtnVariedadTablas ?>;
-        if(cantBtnVariedad < minimoCantidad){
+        var arrayBtnVariedad = <?php echo json_encode($arrayBtnVariedad) ?>;
+        var contarCantidad = true;
+        
+        for (var i = 0; i < arrayBtnVariedad.length; i++){
+            if(arrayBtnVariedad[i] == 1 || arrayBtnVariedad[i] == 2 || arrayBtnVariedad[i] == 3)
+            contarCantidad = false;
+        }
+
+        if((cantBtnVariedad < minimoCantidad) && contarCantidad){
              var mimodal = crearModalTexto("SE DEBEN ELEGIR "+minimoCantidad+" O MAS VARIEDADES");
              mostrarModal(mimodal);
         }else{
@@ -319,21 +337,20 @@ if (isset($_GET["accion"])) {
                             }
                             echo ' value="'.$registroVariedadesLista["BOTONID"].'_0">-</option>
                                     <option';
-                            if ($registroVariedadesLista["CANTIDAD"] == 5) {
-                                echo ' selected';
-                              
+                            if ($registroVariedadesLista["CANTIDAD"] == $minimoPiezas) {
+                                echo ' selected';                              
                             }
-                            echo ' value="'.$registroVariedadesLista["BOTONID"].'_5">5</option>
+                            echo ' value="'.$registroVariedadesLista["BOTONID"].'_'.$minimoPiezas.'">'.$minimoPiezas.'</option>
                                         <option';
-                            if ($registroVariedadesLista["CANTIDAD"] == 10) {
+                            if ($registroVariedadesLista["CANTIDAD"] == ($minimoPiezas*2)) {
                                 echo ' selected';
                             }
-                            echo ' value="'.$registroVariedadesLista["BOTONID"].'_10">10</option>
+                            echo ' value="'.$registroVariedadesLista["BOTONID"].'_'.($minimoPiezas*2).'">'.($minimoPiezas*2).'</option>
                                         <option';
-                            if ($registroVariedadesLista["CANTIDAD"] == 15) {
+                            if ($registroVariedadesLista["CANTIDAD"] == ($minimoPiezas*3)) {
                                 echo ' selected';
                             }
-                            echo ' value="'.$registroVariedadesLista["BOTONID"].'_15">15</option>
+                            echo ' value="'.$registroVariedadesLista["BOTONID"].'_'.($minimoPiezas*3).'">'.($minimoPiezas*3).'</option>
                                     </select>
                                 </td>
                                 </tr>';

@@ -53,9 +53,6 @@ while ($resultConsultaNumeroCliente = $resConsultaNumeroCliente->fetch_array(MYS
     $numeroClienteMaipu=$resultConsultaNumeroCliente["NUMERO"];
 }
 
-
-
-
 if (isset($_GET["accion"])){
     if($_GET["accion"]=="buscar"){
         if (isset($_GET["telefono"]) || isset($_GET["cliente"])) {

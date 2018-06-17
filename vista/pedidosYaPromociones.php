@@ -164,7 +164,7 @@ if (isset($_GET["accion"])) {
         <table width="100%" cellpadding="20">
             <tr align="center">
                 <td>
-                    <input type="button" value="Atras" style="width:120px;height:40px" onClick=" window.location.href = 'configuracion.html'">
+                    <input type="button" value="Atras" style="width:120px;height:40px" onClick=" window.location.href = 'configuracion.php'">
                 </td>   
                  <td>
                     <input type="button" value="Limpiar" style="width:120px;height:40px" onClick=" window.location.href = 'pedidosYaPromociones.php'">

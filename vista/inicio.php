@@ -2,10 +2,94 @@
 <?php
     include ("../conexion/conexion.php");
     $conexion = crearConexion();
+    date_default_timezone_set("America/Argentina/Mendoza");
+    $fechaActual = date("d-m-Y H:i:s",strtotime('-1 hour',strtotime(date("d-m-Y H:i:s"))));
+    $horaActual = date("H",strtotime($fechaActual));
+
+    if($horaActual < 17){
+        $diaFin = date("d",strtotime($fechaActual));
+        $mesFin = date("m",strtotime($fechaActual));
+        $añoFin = date("Y",strtotime($fechaActual));
+        
+        $fechaInicio = date("d-m-Y H:i:s",strtotime(date("d-m-Y H:i:s",strtotime($fechaActual))."- 1 days"));
+        $diaInicio = date("d",strtotime($fechaInicio));
+        $mesInicio = date("m",strtotime($fechaInicio));
+        $añoInicio = date("Y",strtotime($fechaInicio));
+    }else{
+        $fechaFin = date("d-m-Y H:i:s",strtotime(date("d-m-Y",strtotime($fechaActual))."+ 1 days"));
+        $diaFin = date("d",strtotime($fechaFin));
+        $mesFin = date("m",strtotime($fechaFin));
+        $añoFin = date("Y",strtotime($fechaFin));        
+        
+        $diaInicio = date("d",strtotime($fechaActual));
+        $mesInicio = date("m",strtotime($fechaActual));
+        $añoInicio = date("Y",strtotime($fechaActual));
+    }
     
     $detalleNumeroPedido="";
     $resConsultaTelefonoNumero="";
     $pedidoCompletoDetalle="";   
+    $detalleFechaPedido="";
+    $detalleFechaEntrega="";
+    $detalleTelefonoNumero="";
+    $detalleTotal="";
+    $detalleVuelto="";
+    $detalleL="";
+    $detalleE="";
+    $detalleP="";
+    $detalleRetiro="";
+    $detalleCambioLocal="";
+    $detalleNota="";
+    $detalleDireccionCalle="";
+    $detalleDireccionNumeracion="";
+    $detalleDireccionPiso="";
+    $detalleDireccionDepartamento="";
+    $detalleDireccionZona="";
+    $detalleDireccionDelivery="";
+    $detallePDF="";
+    $detallePaga="";
+    $detalleNombre="";
+    
+    $idArray = array();
+    $fechaPedidoArray = array();
+    $fechaEntregaArray = array();
+    $eArray = array();
+    $lArray = array();
+    
+    $fechasPedido = "SELECT ID,FECHAPEDIDO,FECHALISTO,E,DELIVERYID FROM pedidofinal";
+    $resFechasPedido = $conexion->query($fechasPedido);
+    while ($registroFechasPedido = $resFechasPedido->fetch_array(MYSQLI_BOTH)) {
+        array_push($idArray, $registroFechasPedido["ID"]);
+        array_push($fechaPedidoArray, $registroFechasPedido["FECHAPEDIDO"]);
+        if($registroFechasPedido["FECHALISTO"] == ''){
+            array_push($fechaEntregaArray, 0);
+        }else{
+            array_push($fechaEntregaArray, $registroFechasPedido["FECHALISTO"]);
+        }
+        if($registroFechasPedido["E"] == 1){
+            array_push($eArray, $registroFechasPedido["E"]);
+        }else{
+            array_push($eArray, 0);
+        }
+        
+        if($registroFechasPedido["DELIVERYID"] != ''){
+            array_push($lArray, 1);
+        }else{
+            array_push($lArray, 0);
+        }
+        
+        
+    }
+    
+    $consultaTiempos = "SELECT DEMORA_L_VERDE,DEMORA_L_AMARILLO,DEMORA_E_VERDE,DEMORA_E_AMARILLO FROM configuraciontiempos";
+    $resConsultaTiempos = $conexion->query($consultaTiempos);
+    while ($registroConsultaTiempos = $resConsultaTiempos->fetch_array(MYSQLI_BOTH)) {
+        $demoraLVerde = $registroConsultaTiempos["DEMORA_L_VERDE"];
+        $demoraLAmarillo = $registroConsultaTiempos["DEMORA_L_AMARILLO"];
+        $demoraEVerde = $registroConsultaTiempos["DEMORA_E_VERDE"];
+        $demoraEAmarillo = $registroConsultaTiempos["DEMORA_E_AMARILLO"];
+    }
+    
     if (isset($_GET["accion"])) {
         if (($_GET["accion"]) == 'cargarDetalle') {
             $pedidoFinalId=$_GET["id"];
@@ -256,10 +340,13 @@
             $idL = $_GET["idL"];
             if($idL == 'Seleccionar'){
                 $actualizarL = "UPDATE PEDIDOFINAL SET DELIVERYID = NULL WHERE ID = ".$pedidoFinalId;    
+                $actualizarE = "UPDATE PEDIDOFINAL SET FECHALISTO = NULL WHERE ID = ".$pedidoFinalId;  
             }else{
                 $actualizarL = "UPDATE PEDIDOFINAL SET DELIVERYID = ".$idL." WHERE ID = ".$pedidoFinalId;
+                $actualizarFecha = "UPDATE PEDIDOFINAL SET FECHALISTO = NOW() WHERE ID = ".$pedidoFinalId;
             }
             $conexion->query($actualizarL);
+            $conexion->query($actualizarFecha);
             Header("Location: inicio.php");
         }        
         if (($_GET["accion"]) == 'cambiarLocal') {
@@ -354,6 +441,17 @@
         }
         
         function updateTime() {
+            var idArray = <?php echo json_encode($idArray); ?>; 
+            var fechaPedidoArray = <?php echo json_encode($fechaPedidoArray); ?>; 
+            var fechaEntregaArray = <?php echo json_encode($fechaEntregaArray); ?>; 
+            var eArray = <?php echo json_encode($eArray); ?>; 
+            var lArray = <?php echo json_encode($lArray); ?>; 
+            
+            var demoraLVerde = <?php echo json_encode($demoraLVerde); ?>;
+            var demoraLAmarillo = <?php echo json_encode($demoraLAmarillo); ?>;
+            var demoraEVerde = <?php echo json_encode($demoraEVerde); ?>;
+            var demoraEAmarillo = <?php echo json_encode($demoraEAmarillo); ?>;
+       
             var fecha = new Date();
             var horas = fecha.getHours();
             var minutos = fecha.getMinutes();
@@ -366,6 +464,53 @@
             }
             document.getElementById('contenedor').innerHTML = '' + horas + ':' + minutos +' hs';
             setTimeout('updateTime()', 1000);
+
+            //Recorre los pedidos
+            for(var i=0;i<idArray.length;i++){  
+                //Si el pedido esta pagado, no verifica los tiempos
+                if(eArray[i] == 1){
+                   document.getElementById('celdaL'+idArray[i]).style.backgroundColor="#FFFFFF";
+                   document.getElementById('celdaE'+idArray[i]).style.backgroundColor="#FFFFFF";
+                //SI el pedido no esta pagado   
+                }else{
+                   //Si el pedido ya esta listo, modifica color de celda E
+                   if(lArray[i] == 1){     
+                        var fechaDemoraEVerde = new Date(fechaEntregaArray[i]);
+                        fechaDemoraEVerde.setSeconds((fechaDemoraEVerde.getSeconds())+demoraEVerde*60);
+
+                        var fechaDemoraEAmarillo = new Date(fechaEntregaArray[i]);
+                        fechaDemoraEAmarillo.setSeconds((fechaDemoraEAmarillo.getSeconds())+(parseInt(demoraEVerde)+parseInt(demoraEAmarillo))*60);
+                        document.getElementById('celdaL'+idArray[i]).style.backgroundColor="#FFFFFF";
+                        //Si fecha actual es menor a fecha de pedido mas tiempo de verde, pinta verde 
+                        if(fecha < fechaDemoraEVerde){
+                                document.getElementById('celdaE'+idArray[i]).style.backgroundColor="#008000";
+                                //Si fecha actual es menor a fecha de pedido mas tiempo de amarillo, pinta amarillo
+                            }else if(fecha < fechaDemoraEAmarillo){
+                                document.getElementById('celdaE'+idArray[i]).style.backgroundColor="#FFFF00";
+                                //Si fecha actual es mayor a fecha de pedido mas tiempo de amarillo, pinta rojo
+                            }else{
+                                 document.getElementById('celdaE'+idArray[i]).style.backgroundColor="#FF0000";
+                            }
+                    //Si el pedido no esta listo, modifica color de celda L        
+                    }else{   
+                        // Si no tiene fecha de listo
+                   //     if(fechaEntregaArray[i] == 0){
+                            var fechaDemoraLVerde = new Date(fechaPedidoArray[i]);
+                            fechaDemoraLVerde.setSeconds((fechaDemoraLVerde.getSeconds())+demoraLVerde*60);
+
+                            var fechaDemoraLAmarillo = new Date(fechaPedidoArray[i]);
+                            fechaDemoraLAmarillo.setSeconds((fechaDemoraLAmarillo.getSeconds())+(parseInt(demoraLVerde)+parseInt(demoraLAmarillo))*60);
+                            if(fecha < fechaDemoraLVerde){
+                                document.getElementById('celdaL'+idArray[i]).style.backgroundColor="#008000";
+                            }else if(fecha < fechaDemoraLAmarillo){
+                                document.getElementById('celdaL'+idArray[i]).style.backgroundColor="#FFFF00";
+                            }else{
+                                document.getElementById('celdaL'+idArray[i]).style.backgroundColor="#FF0000";
+                            }
+                    //    }
+                    }
+               }
+            }   
         }
         
         function cambiarTipoEntrega(id,tipoEntregaId){
@@ -477,7 +622,9 @@
                                         CAMBIOLOCALID,
                                         E,
                                         P
-                                        FROM pedidofinal";
+                                        FROM pedidofinal
+                                        WHERE FECHAPEDIDO BETWEEN '$añoInicio-$mesInicio-$diaInicio 17:00:00' and '$añoFin-$mesFin-$diaFin 16:59:59'
+                                        ORDER BY NUMEROPEDIDO DESC";
 
                     $resConsultaPedidoFinal = $conexion->query($consultaPedidoFinal);
                     while ($registroConsultaPedidoFinal = $resConsultaPedidoFinal->fetch_array(MYSQLI_BOTH)) {
@@ -660,7 +807,7 @@
                             echo '<td align="center" style="width:5%;">';
                                 echo '$'.($registroConsultaPedidoFinal["PAGA"]-$registroConsultaPedidoFinal["PRECIOTOTAL"]);
                             echo '</td>';
-                            echo '<td align="center" style="width:8%;">';
+                            echo '<td align="center" style="width:8%;height:35px;" id="celdaL'.$registroConsultaPedidoFinal["ID"].'">';
                                 echo '<select style="width:100px;height:25px" onchange="cambiarL('.$registroConsultaPedidoFinal["ID"].',this.value)">';
                                 $consultaEmpleados = "SELECT ID, ALIAS FROM EMPLEADO WHERE DELIVERY = 1 AND PRESENTE = 1";
                                 $resConsultaEmpleados = $conexion->query($consultaEmpleados);
@@ -683,7 +830,7 @@
                                 }
                                 echo '</select>';
                             echo '</td>'; 
-                            echo '<td align="center" style="width:2%;">';
+                            echo '<td align="center" id="celdaE'.$registroConsultaPedidoFinal["ID"].'" style="width:2%;">';
                                 if($registroConsultaPedidoFinal["E"] == 0){
                                     echo '<input type="checkbox" style="width:15px;height:15px" onClick="cambiarE('.$registroConsultaPedidoFinal["ID"].',1)">';
                                 }else{
@@ -725,10 +872,10 @@
                                 echo '</select>';
                             echo '</td>';  
                             echo '<td align="center" style="width:60px;">';
-                                echo '<input type="button" value="Detalle" style="width:60px;height:25px;" onClick="llamarDetalle('.$registroConsultaPedidoFinal["ID"].')">';
+                                echo '<input type="button" value="Detalle" style="width:60px;height:35px;" onClick="llamarDetalle('.$registroConsultaPedidoFinal["ID"].')">';
                             echo '</td>'; 
                             echo '<td align="center" style="width:60px;">';
-                                echo '<input type="button" value="Anular" style="width:60px;height:25px;">';
+                                echo '<input type="button" value="Anular" style="width:60px;height:35px;">';
                             echo '</td>'; 
                         echo '</tr>';
                     }

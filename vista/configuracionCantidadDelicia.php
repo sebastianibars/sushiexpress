@@ -12,6 +12,7 @@
     $deliciaIdCantidadDelicia = "";
     $precioCantidadDelicia = "";
     $cantidadCantidadDelicia = "";
+    $resCargarCantidadDelicia="";
 
     if (isset($_GET["accion"])) {
         if (($_GET["accion"]) == 'editar') {
@@ -44,7 +45,7 @@
                     $primerDelicia = "select * from delicia order by id asc limit 1";
                     $resPrimerDelicia = $conexion->query($primerDelicia);
 
-                    $idDelicia = "0";
+                    $idDelicia = 0;
 
                     while ($registroPrimerDelicia = $resPrimerDelicia->fetch_array(MYSQLI_BOTH)) {
                         $idDelicia = $registroPrimerDelicia['ID'];
@@ -181,7 +182,7 @@
     <table width="100%" align="center">
         <tr>
             <td align="center">
-                <input type="button" value="Atras" style="width:150px;height:40px" onClick=" window.location.href = 'configuracion.html'">
+                <input type="button" value="Atras" style="width:150px;height:40px" onClick=" window.location.href = 'configuracion.php'">
             </td>
         </tr>
     </table>

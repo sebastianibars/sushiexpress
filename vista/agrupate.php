@@ -18,12 +18,8 @@ $resListPedidos = $conexion->query($listPedidos);
 //////////////////////////////////////////////////////////////////////////////////////////////
 $consultaPedidoId = "SELECT PEDIDOFINALID FROM pedidofinal_usuario_1";
 $resConsultaPedidoId = $conexion->query($consultaPedidoId);
-
-while ($registroConsultaPedidoId = $resConsultaPedidoId->fetch_array(MYSQLI_BOTH)) {
-    $pedidoFinalId = $registroConsultaPedidoId["PEDIDOFINALID"];
-}
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-$listaCodigos = "SELECT CODIGO FROM AGRUPATE_CODIGO_TMP WHERE PEDIDOFINALID = $pedidoFinalId"; 
+$listaCodigos = "SELECT CODIGO FROM AGRUPATE_CODIGO_TMP"; 
 $resListaCodigos = $conexion->query($listaCodigos);
 
 $codigo1Formulario ="";
@@ -54,13 +50,7 @@ if (isset($_GET["accion"])) {
                 $codigo2=$_GET["codigo2"];
             }
 
-            $consultaPedidoFinal ="SELECT PEDIDOFINALID FROM pedidofinal_usuario_1";
-            $resConsultaPedidoFinal=$conexion->query($consultaPedidoFinal);
-            while ($registroConsultaPedidoFinal = $resConsultaPedidoFinal->fetch_array(MYSQLI_BOTH)) {
-                $pedidoFinalId = $registroConsultaPedidoFinal["PEDIDOFINALID"];
-            }            
-            
-            $eliminarCodTmp = "DELETE FROM AGRUPATE_CODIGO_TMP WHERE PEDIDOFINALID = $pedidoFinalId";
+            $eliminarCodTmp = "DELETE FROM AGRUPATE_CODIGO_TMP";
             $conexion->query($eliminarCodTmp);
             
             $borrarDatosTablaTemporal = "delete from BTN_AGRUPATE_TMP where BOTONID = $idBoton";
@@ -69,12 +59,12 @@ if (isset($_GET["accion"])) {
             
             if($codigo1 != '' || $codigo2 != ''){
                 if($codigo1 != ''){
-                    $guardarCodigo = "INSERT INTO AGRUPATE_CODIGO_TMP (PEDIDOFINALID,CODIGO) VALUES ($pedidoFinalId,$codigo1)";
+                    $guardarCodigo = "INSERT INTO AGRUPATE_CODIGO_TMP (CODIGO) VALUES ($codigo1)";
                     $conexion->query($guardarCodigo);  
                     $cantPedidos = $cantPedidos+1;
                 }
                 if($codigo2 != ''){
-                    $guardarCodigo = "INSERT INTO AGRUPATE_CODIGO_TMP (PEDIDOFINALID,CODIGO) VALUES ($pedidoFinalId,$codigo2)";
+                    $guardarCodigo = "INSERT INTO AGRUPATE_CODIGO_TMP (CODIGO) VALUES ($codigo2)";
                     $conexion->query($guardarCodigo); 
                     $cantPedidos = $cantPedidos+1;
                 }

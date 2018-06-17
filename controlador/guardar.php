@@ -4,6 +4,31 @@ include ("../conexion/conexion.php");
 
 $conexion = crearConexion();
 $noCambiarPagina = false;
+
+ date_default_timezone_set("America/Argentina/Mendoza");
+        $fechaActual = date("d-m-Y H:i:s",strtotime('-1 hour',strtotime(date("d-m-Y H:i:s"))));
+        $horaActual = date("H",strtotime($fechaActual));
+
+        if($horaActual < 17){
+            $diaFin = date("d");
+            $mesFin = date("m");
+            $añoFin = date("Y");
+
+            $fechaInicio = date("d-m-Y H:i:s",strtotime(date("d-m-Y H:i:s")."- 1 days"));
+            $diaInicio = date("d",strtotime($fechaInicio));
+            $mesInicio = date("m",strtotime($fechaInicio));
+            $añoInicio = date("Y",strtotime($fechaInicio));
+        }else{
+            $fechaFin = date("d-m-Y H:i:s",strtotime(date("d-m-Y")."+ 1 days"));
+            $diaFin = date("d",strtotime($fechaFin));
+            $mesFin = date("m",strtotime($fechaFin));
+            $añoFin = date("Y",strtotime($fechaFin));        
+
+            $diaInicio = date("d");
+            $mesInicio = date("m");
+            $añoInicio = date("Y");
+        }      
+
 if (isset($_POST["formulario"])) {
     if ($_POST["formulario"] == "empleado") {
         $idEmpleado = $_POST["idEmpleado"];
@@ -82,9 +107,9 @@ if (isset($_POST["formulario"])) {
         $cantFilas = $cantidadPiezas->num_rows;
         
         if($cantFilas>0){
-            $sqlGuardar="update minimopiezas set piezas='$minimoPiezas' where id=1";
+            $sqlGuardar="update minimopiezas set piezas='$minimoPiezas'";
         }else{
-            $sqlGuardar="insert into minimopiezas (id,piezas) value (1,'$minimoPiezas')";
+            $sqlGuardar="insert into minimopiezas (piezas) value ('$minimoPiezas')";
         }
         $url = "../vista/configuracionTabla.php";
     } else if ($_POST["formulario"] == "grupoVariedad") {
@@ -324,7 +349,11 @@ if (isset($_POST["formulario"])) {
                  $idDireccion=$registroSeleccionarDireccionId["ID"];
             }
         }
-        $consultaNumeroPedido="SELECT IFNULL(MAX(NUMEROPEDIDO+1),1) NUMEROPEDIDO FROM  pedidofinal";
+        
+       
+        
+        $consultaNumeroPedido="SELECT IFNULL(MAX(NUMEROPEDIDO+1),1) NUMEROPEDIDO FROM  pedidofinal 
+                               WHERE FECHAPEDIDO BETWEEN '$añoInicio-$mesInicio-$diaInicio 17:00:00' and '$añoFin-$mesFin-$diaFin 16:59:59'";
         $resNumeroPedido = $conexion->query($consultaNumeroPedido);
         while ($registroNumeroPedido = $resNumeroPedido->fetch_array(MYSQLI_BOTH)) {
             $numeroPedido=$registroNumeroPedido["NUMEROPEDIDO"];
@@ -398,7 +427,8 @@ if (isset($_POST["formulario"])) {
             }
         }
 
-        $consultaNumeroPedido="SELECT IFNULL(MAX(NUMEROPEDIDO+1),1) NUMEROPEDIDO FROM  pedidofinal";
+        $consultaNumeroPedido="SELECT IFNULL(MAX(NUMEROPEDIDO+1),1) NUMEROPEDIDO FROM  pedidofinal
+                               WHERE FECHAPEDIDO BETWEEN '$añoInicio-$mesInicio-$diaInicio 17:00:00' and '$añoFin-$mesFin-$diaFin 16:59:59'";
         $resNumeroPedido = $conexion->query($consultaNumeroPedido);
         while ($registroNumeroPedido = $resNumeroPedido->fetch_array(MYSQLI_BOTH)) {
             $numeroPedido=$registroNumeroPedido["NUMEROPEDIDO"];
@@ -434,7 +464,8 @@ if (isset($_POST["formulario"])) {
             $paga=$_POST["paga"];
         }
 
-        $consultaNumeroPedido="SELECT IFNULL(MAX(NUMEROPEDIDO+1),1) NUMEROPEDIDO FROM  pedidofinal";
+        $consultaNumeroPedido="SELECT IFNULL(MAX(NUMEROPEDIDO+1),1) NUMEROPEDIDO FROM  pedidofinal
+                               WHERE FECHAPEDIDO BETWEEN '$añoInicio-$mesInicio-$diaInicio 17:00:00' and '$añoFin-$mesFin-$diaFin 16:59:59'";
         $resNumeroPedido = $conexion->query($consultaNumeroPedido);
         while ($registroNumeroPedido = $resNumeroPedido->fetch_array(MYSQLI_BOTH)) {
             $numeroPedido=$registroNumeroPedido["NUMEROPEDIDO"];
